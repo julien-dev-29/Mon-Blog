@@ -34,6 +34,13 @@ class Router
         $this->router->map("GET", $path, $callable, $name);
     }
 
+    /**
+     * Génère une URL avec des paramètres
+     *
+     * @param string $routeName
+     * @param array $params
+     * @return string
+     */
     public function generateURL(string $routeName, array $params)
     {
         return $this->router->generate($routeName, $params);
@@ -41,6 +48,7 @@ class Router
 
     /**
      * Summary of match
+     *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return void
      */
