@@ -29,7 +29,10 @@ class App
      */
     public function __construct(array $modules = [], array $dependencies = [])
     {
+        // J'initialise le routeur
         $this->router = new Router();
+        // Si il y a une clé renderer dans le tableau de dépendances
+        // on ajoute le router en variable globale
         if (array_key_exists('renderer', $dependencies)) {
             $dependencies['renderer']->addGlobal('router', $this->router);
         }
@@ -51,7 +54,6 @@ class App
                 ->withStatus(301)
                 ->withHeader('Location', substr(string: $uri, offset: 0, length: -1));
         }
-
         $route = $this->router->match($request);
         if ($route === null) {
             return new Response(404, [], "<h1>Error 404</h1>");

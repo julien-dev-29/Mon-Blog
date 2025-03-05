@@ -1,15 +1,15 @@
 <?php
 
-namespace Tests\Framework;
+namespace Tests\Framework\Renderer;
 
-use App\Framework\Renderer;
+use Framework\Renderer\PHPRenderer;
 use PHPUnit\Framework\TestCase;
 
-class RendererTest extends TestCase
+class PHPRendererTest extends TestCase
 {
     /**
      * Summary of render
-     * @var Renderer
+     * @var PHPRenderer
      */
     private $renderer;
 
@@ -19,20 +19,20 @@ class RendererTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->renderer = new Renderer();
-        $this->renderer->addPath(__DIR__ . '/views');
+        $this->renderer = new PHPRenderer();
+        $this->renderer->addPath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'views');
     }
 
     public function testRenderWithTheRightPath()
     {
-        $this->renderer->addPath('blog', __DIR__ . '/views');
+        $this->renderer->addPath('blog', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'views');
         $content = $this->renderer->render('@blog/demo');
         $this->assertEquals('Salut les gens', $content);
     }
 
     public function testRenderWithTheDefaultPath()
     {
-        $this->renderer->addPath(__DIR__ . '/views');
+        $this->renderer->addPath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'views');
         $content = $this->renderer->render('demo');
         $this->assertEquals('Salut les gens', $content);
     }

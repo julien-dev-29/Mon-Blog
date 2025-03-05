@@ -3,13 +3,13 @@
 require '../vendor/autoload.php';
 
 use App\Blog\BlogModule;
-use App\Framework\Renderer;
 use Framework\App;
+use Framework\Renderer\PHPRenderer;
+use Framework\Renderer\TwigRenderer;
 use GuzzleHttp\Psr7\ServerRequest;
 use function Http\Response\send;
 
-$renderer = new Renderer();
-$renderer->addPath(dirname(__DIR__) . '/' . '/templates');
+$renderer = new TwigRenderer(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates');
 
 $app = new App(
     modules: [

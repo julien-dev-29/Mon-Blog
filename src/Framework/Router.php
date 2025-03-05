@@ -5,7 +5,6 @@ namespace Framework;
 use AltoRouter;
 use Psr\Http\Message\ServerRequestInterface;
 use Framework\Router\Route;
-use function PHPUnit\Framework\isEmpty;
 
 /**
  * Summary of Router
