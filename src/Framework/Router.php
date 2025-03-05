@@ -24,11 +24,11 @@ class Router
      * Summary of get
      *
      * @param string $path
-     * @param callable $callable
+     * @param string|callable $callable
      * @param string $name
      * @return void
      */
-    public function get(string $path, callable $callable, string $name)
+    public function get(string $path, $callable, string $name)
     {
         $this->router->map("GET", $path, $callable, $name);
     }

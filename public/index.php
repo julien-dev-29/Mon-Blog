@@ -3,23 +3,29 @@
 require '../vendor/autoload.php';
 
 use App\Blog\BlogModule;
+use DI\ContainerBuilder;
 use Framework\App;
-use Framework\Renderer\PHPRenderer;
-use Framework\Renderer\TwigRenderer;
 use GuzzleHttp\Psr7\ServerRequest;
 use function Http\Response\send;
 
-$renderer = new TwigRenderer(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates');
+$modules = [
+    BlogModule::class
+];
+
+$builder = new ContainerBuilder();
+$builder->addDefinitions(dirname(__DIR__) . '/config/config.php');
+foreach ($modules as $module) {
+    if ($module::DEFINITIONS !== null) {
+        $builder->addDefinitions($module::DEFINITIONS);
+    }
+}
+$builder->addDefinitions(dirname(__DIR__) . '/config.php');
+
+$container = $builder->build();
 
 $app = new App(
-    modules: [
-        BlogModule::class
-    ],
-    dependencies: [
-        'renderer' => $renderer
-    ]
+    container: $container,
+    modules: $modules
 );
-
 $response = $app->run(request: ServerRequest::fromGlobals());
-
 send($response);
