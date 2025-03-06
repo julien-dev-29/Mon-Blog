@@ -33,7 +33,7 @@ class BlogModule extends Module
         );
 
         $router->get(
-            path: "$prefix/[*:slug]",
+            path: "$prefix/[*:slug]-[i:id]",
             callable: BlogAction::class,
             name: 'blog.show'
         );

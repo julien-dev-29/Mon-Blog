@@ -1,7 +1,5 @@
 <?php
 
-namespace Src\Blog\Db\Seeds;
-
 declare(strict_types=1);
 
 use Faker\Factory;
@@ -17,7 +15,7 @@ class PostSeeder extends AbstractSeed
             $date = $faker->unixTime('now');
             $data[] = [
                 'name' => $faker->word(),
-                'slug' => $faker->sentence(),
+                'slug' => $faker->slug(),
                 'content' => $faker->text(3000),
                 'created_at' => $faker->date('Y-m-d H:i:s', $date),
                 'updated_at' => $faker->date('Y-m-d H:i:s', $date)

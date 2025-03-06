@@ -1,6 +1,8 @@
 {% extends "layout.html.twig" %}
-
+{% block title post.name %}
 {% block body %}
 	<h1>Article
-		{{ slug }}</h1>
+		{{ post.name }}</h1>
+		<small>{{post.created_at | date('m/d/Y')}}</small>
+	<p>{{post.content | nl2br}}</p>
 {% endblock %}
