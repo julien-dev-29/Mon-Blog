@@ -1,6 +1,6 @@
 <?php
 
-require '../vendor/autoload.php';
+require dirname(path: __DIR__) . '/vendor/autoload.php';
 
 use App\Blog\BlogModule;
 use DI\ContainerBuilder;
@@ -27,5 +27,8 @@ $app = new App(
     container: $container,
     modules: $modules
 );
-$response = $app->run(request: ServerRequest::fromGlobals());
-send($response);
+
+if (php_sapi_name() !== "cli") {
+    $response = $app->run(request: ServerRequest::fromGlobals());
+    send($response);
+}
