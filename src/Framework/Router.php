@@ -40,9 +40,13 @@ class Router
      * @param array $params
      * @return string
      */
-    public function generateURL(string $routeName, array $params)
+    public function generateURL(string $routeName, array $params = [], array $queryParams = [])
     {
-        return $this->router->generate($routeName, $params);
+        $uri = $this->router->generate($routeName, $params);
+        if (!empty($queryParams)) {
+            return $uri . '?' . http_build_query($queryParams);
+        }
+        return $uri;
     }
 
     /**

@@ -60,16 +60,17 @@ class BlogAction
         if ($request->getAttribute('id')) {
             return $this->show(request: $request);
         }
-        return $this->index();
+        return $this->index($request);
     }
 
     /**
      * Summary of index
      * @return string
      */
-    public function index(): string
+    public function index(Request $request): string
     {
-        $posts = $this->postTable->findPaginated();
+        $params = $request->getQueryParams();
+        $posts = $this->postTable->findPaginated(perPage: 12, currentPage: $params['p'] ?? 1);
         return $this->renderer->render(
             view: '@blog/index',
             params: compact(var_name: 'posts')

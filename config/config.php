@@ -6,6 +6,7 @@ use Framework\Renderer\{
 };
 use Framework\Router;
 use Framework\Router\RouterTwigExtension;
+use Framework\Twig\{PagerFantaExtension, TextExtension, TimeExtension};
 use Psr\Container\ContainerInterface;
 
 use function DI\{create, factory, get};
@@ -17,7 +18,10 @@ return [
     'database.name' => 'monframework',
     'views.path' => dirname(__DIR__) . '/templates',
     'twig.extensions' => [
-        get(RouterTwigExtension::class)
+        get(RouterTwigExtension::class),
+        get(PagerFantaExtension::class),
+        get(TextExtension::class),
+        get(TimeExtension::class)
     ],
     Router::class => create(),
     RendererInterface::class => factory(TwigRendererFactory::class),

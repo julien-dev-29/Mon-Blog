@@ -16,6 +16,11 @@ use Tests\Framework\Modules\StringModule;
  */
 class AppTest extends TestCase
 {
+
+    public function setUp(): void
+    {
+        
+    }
     /**
      * Summary of testRedirectTrailingSlash
      * @return void

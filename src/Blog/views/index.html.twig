@@ -2,12 +2,27 @@
 {% block title 'Mon Blog' %}
 {% block body %}
 	<h1>Bienvenu sur le blog</h1>
-	<ul>
+	<div class="row row-cols-md-3 pt-4">
 		{% for post in posts %}
-			<li>
-				<a href="{{ path('blog.show', {slug: post.slug, id: post.id}) }}">{{ post.name }}</a>
-			</li>
+			<div class="card">
+				<div class="card-header">
+					<h2>
+						<a href="{{path('blog.show', {slug: post.slug, id: post.id})}}">{{post.name}}</a>
+					</h2>
+				</div>
+				<div class="card-body">
+					<p>{{ post.content | excerpt(200) | nl2br }}</p>
+					<p class="text-muted">{{ post.created_at | ago}}</p>
+				</div>
+				<div class="card-footer">
+					<a href="{{path('blog.show', {slug: post.slug, id: post.id})}}" class="btn btn-primary">Voir l'article</a>
+				</div>
+			</div>
 		{% endfor %}
 
-	</ul>
+	</div>
+	<div class="d-flex justify-content-center align-content-center mt-4">
+		{{ paginate(posts, 'blog.index') }}
+	</div>
+
 {% endblock %}
