@@ -7,21 +7,49 @@ use Twig\Loader\FilesystemLoader;
 
 class TwigRenderer implements RendererInterface
 {
+    /**
+     * Summary of twig
+     * @var Environment
+     */
     private $twig;
-    private $loader;
-    public function __construct(FilesystemLoader $loader, Environment $twig)
+
+    /**
+     * Summary of __construct
+     * @param \Twig\Environment $twig
+     */
+    public function __construct(Environment $twig)
     {
-        $this->loader = $loader;
         $this->twig = $twig;
     }
+
+    /**
+     * Summary of addGlobal
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
     public function addGlobal(string $key, $value): void
     {
         $this->twig->addGlobal($key, $value);
     }
+
+    /**
+     * Summary of addPath
+     * @param string $namespace
+     * @param string|null $path
+     * @return void
+     */
     public function addPath(string $namespace, string|null $path = null): void
     {
-        $this->loader->addPath($path, $namespace);
+        $this->twig->getLoader()->addPath($path, $namespace);
     }
+
+    /**
+     * Summary of render
+     * @param string $view
+     * @param array|null $params
+     * @return string
+     */
     public function render(string $view, array|null $params = []): string
     {
         return $this->twig->render($view . '.html.twig', $params);

@@ -4,10 +4,8 @@ namespace App\Blog\Table;
 
 use App\Blog\Entity\Post;
 use Framework\Database\PaginatedQuery;
-use Kint\Kint;
 use Pagerfanta\Pagerfanta;
 use PDO;
-use stdClass;
 
 class PostTable
 {
@@ -42,13 +40,13 @@ class PostTable
     /**
      * Trouve un article par son id
      *
-     * @return Post
+     * @return Post|null
      */
-    public function find(int $id): Post
+    public function find(int $id): ?Post
     {
         $query = $this->pdo->prepare(query: 'SELECT * FROM posts WHERE id = ?;');
         $query->execute(params: [$id]);
         $query->setFetchMode(PDO::FETCH_CLASS, Post::class);
-        return $query->fetch();
+        return $query->fetch() ?: null;
     }
 }

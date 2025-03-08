@@ -9,6 +9,11 @@ use Twig\Loader\FilesystemLoader;
 
 class TwigRendererFactory
 {
+    /**
+     * Summary of __invoke
+     * @param \Psr\Container\ContainerInterface $container
+     * @return TwigRenderer
+     */
     public function __invoke(ContainerInterface $container): TwigRenderer
     {
         $viewPath = $container->get('views.path');
@@ -21,6 +26,6 @@ class TwigRendererFactory
                 $twig->addExtension($extension);
             }
         }
-        return new TwigRenderer($loader, $twig);
+        return new TwigRenderer($twig);
     }
 }
