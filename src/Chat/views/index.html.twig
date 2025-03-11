@@ -1,0 +1,45 @@
+{% extends "@chat/layout.html.twig" %}
+
+{% block title "Le Chat"%}
+
+{% block body %}
+
+	<div id="message"></div>
+	<input id="messageInput" class="form-control" type="text" placeholder="Taper votre message...">
+	<button onclick="sendMessage()" class="btn btn-primary mt-3">Envoyer</button>
+
+	<script>
+		ws = new WebSocket('ws://localhost:8080')
+ws.onopen = () => {
+console.log("Connected to the server");
+}
+ws.onmessage = (e) => {
+const message = document.querySelector('#message')
+const messageContainerElement = document.createElement('div')
+const messageElement = document.createElement('div')
+messageContainerElement.classList.add('d-flex', 'mb-4')
+
+const data = JSON.parse(e.data)
+console.log(data)
+data.from ? messageContainerElement.classList.add('justify-content-end') : messageContainerElement.classList.add('justify-content-start')
+messageElement.classList.add('w-50', 'card', 'p-5')
+messageElement.textContent = data.msg
+messageContainerElement.appendChild(messageElement)
+message.appendChild(messageContainerElement)
+}
+ws.onclose = function () {
+console.log('Disconnected from the server');
+};
+
+ws.onerror = function (error) {
+console.error('WebSocket error:', error);
+};
+
+const sendMessage = () => {
+const input = document.querySelector('#messageInput')
+const message = input.value
+ws.send(message)
+input.value = ''
+}
+	</script>
+{% endblock %}

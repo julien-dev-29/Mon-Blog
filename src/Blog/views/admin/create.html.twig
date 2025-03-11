@@ -1,0 +1,14 @@
+{% extends "@admin/layout.html.twig" %}
+
+{% block title "Publier un article" %}
+
+{% block body %}
+
+	<h1>Publier un article
+		{{item.name}}</h1>
+
+	<form action="{{path('blog.admin.create', {id: item.id})}}" method="post">
+		{% include "@blog/admin/form.html.twig" %}
+	</form>
+
+{% endblock %}

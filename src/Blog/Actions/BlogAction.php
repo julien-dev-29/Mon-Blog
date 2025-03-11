@@ -6,8 +6,6 @@ use App\Blog\Table\PostTable;
 use Framework\Actions\RouterAction;
 use Framework\Renderer\RendererInterface;
 use Framework\Router;
-use GuzzleHttp\Psr7\Response;
-use Kint\Kint;
 use PDO;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;

@@ -16,7 +16,7 @@ trait RouterAction
      *
      * @param string $path
      * @param array $params
-     * @return \Psr\Http\Message\MessageInterface
+     * @return ResponseInterface
      */
     public function redirect(string $path, array $params = []): ResponseInterface
     {

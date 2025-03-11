@@ -15,10 +15,10 @@ class Post
     public function __construct()
     {
         if ($this->created_at) {
-            $this->created_at = new DateTime(datetime: $this->created_at);
+            $this->created_at = new DateTime(datetime: (string) $this->created_at);
         }
         if ($this->updated_at) {
-            $this->updated_at = new DateTime(datetime: $this->updated_at);
+            $this->updated_at = new DateTime(datetime: (string) $this->updated_at);
         }
     }
 }

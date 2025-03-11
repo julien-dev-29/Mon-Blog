@@ -3,7 +3,6 @@
 namespace Framework\Renderer;
 
 use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
 class TwigRenderer implements RendererInterface
 {
@@ -52,6 +51,6 @@ class TwigRenderer implements RendererInterface
      */
     public function render(string $view, array|null $params = []): string
     {
-        return $this->twig->render($view . '.html.twig', $params);
+        return $this->twig->render("$view.html.twig", $params);
     }
 }
