@@ -6,6 +6,8 @@ use App\Blog\Table\PostTable;
 use Framework\Actions\RouterAction;
 use Framework\Renderer\RendererInterface;
 use Framework\Router;
+use Framework\Session\FlashService;
+use Framework\Session\SessionInterface;
 use PDO;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -24,16 +26,19 @@ class AdminBlogAction
     private $pdo;
 
     /**
-     * Summary of router
      * @var Router
      */
     private $router;
 
     /**
-     * Summary of postTable
      * @var PostTable
      */
     private $postTable;
+
+    /**
+     * @var FlashService
+     */
+    private $flash;
 
     /**
      * Trait
@@ -46,11 +51,12 @@ class AdminBlogAction
      * @param \PDO $pdo
      * @param \Framework\Router $router
      */
-    public function __construct(RendererInterface $renderer, Router $router, PostTable $postTable)
+    public function __construct(RendererInterface $renderer, Router $router, PostTable $postTable, FlashService $flash)
     {
         $this->router = $router;
         $this->renderer = $renderer;
         $this->postTable = $postTable;
+        $this->flash = $flash;
     }
 
     /**
@@ -82,7 +88,7 @@ class AdminBlogAction
         $items = $this->postTable->findPaginated(perPage: 12, currentPage: $params['p'] ?? 1);
         return $this->renderer->render(
             view: '@blog/admin/index',
-            params: compact(var_name: 'items')
+            params: compact('items')
         );
     }
 
@@ -98,6 +104,7 @@ class AdminBlogAction
             $params = $this->getParams($request);
             $params['updated_at'] = date('Y-m-d H:i:s');
             $this->postTable->update($item->id, $params);
+            $this->flash->success('L\'article a été modifié avec succés');
             return $this->redirect('blog.admin.index');
         }
         return $this->renderer->render(
@@ -115,6 +122,7 @@ class AdminBlogAction
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             $this->postTable->insert($params);
+            $this->flash->success('L\'article a été publié avec succés');
             return $this->redirect('blog.admin.index');
         }
         return $this->renderer->render('@blog/admin/create');
@@ -123,6 +131,7 @@ class AdminBlogAction
     public function delete(Request $request)
     {
         $this->postTable->delete($request->getAttribute('id'));
+        $this->flash->success('L\'article a été supprimé avec succés');
         return $this->redirect('blog.admin.index');
     }
 

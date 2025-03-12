@@ -2,6 +2,7 @@
 {% block title 'Editer les articles' %}
 {% block body %}
 	<h1>Administration du Blog</h1>
+
 	<p class="text-end">
 		<a href="{{path('blog.admin.create')}}" class="btn btn-primary">Publier un article</a>
 	</p>
@@ -27,7 +28,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	<div class="d-flex justify-content-center align-content-center">
+	<div class="d-flex justify-content-center align-content-center mt-5">
 		{{ paginate(items, 'blog.admin.index') }}
 	</div>
 
