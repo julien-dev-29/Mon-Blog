@@ -1,5 +1,7 @@
 <?php
 
+use App\Chat\ChatModule;
+
 require dirname(path: __DIR__) . '/vendor/autoload.php';
 
 use App\Admin\AdminModule;
@@ -11,7 +13,8 @@ use function Http\Response\send;
 
 $modules = [
     AdminModule::class,
-    BlogModule::class
+    BlogModule::class,
+    ChatModule::class
 ];
 
 $builder = new ContainerBuilder();

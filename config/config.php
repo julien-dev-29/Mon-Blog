@@ -6,7 +6,13 @@ use Framework\Renderer\{
 };
 use Framework\Router;
 use Framework\Router\RouterTwigExtension;
-use Framework\Twig\{PagerFantaExtension, TextExtension, TimeExtension};
+use Framework\Session\{PHPSession, SessionInterface};
+use Framework\Twig\{
+    PagerFantaExtension,
+    TextExtension,
+    TimeExtension,
+    FlashExtension
+};
 use Psr\Container\ContainerInterface;
 
 use function DI\{create, factory, get};
@@ -21,12 +27,14 @@ return [
         get(RouterTwigExtension::class),
         get(PagerFantaExtension::class),
         get(TextExtension::class),
-        get(TimeExtension::class)
+        get(TimeExtension::class),
+        get(FlashExtension::class)
     ],
+    SessionInterface::class => create(PHPSession::class),
     Router::class => create(),
     RendererInterface::class => factory(TwigRendererFactory::class),
-    PDO::class => function (ContainerInterface $container) {
-        return new PDO(
+    PDO::class => fn(ContainerInterface $container) =>
+        new PDO(
             dsn: 'mysql:host=' . $container->get('database.host') .
             ';dbname=' . $container->get('database.name'),
             username: $container->get('database.username'),
@@ -35,6 +43,5 @@ return [
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]
-        );
-    }
+        )
 ];
