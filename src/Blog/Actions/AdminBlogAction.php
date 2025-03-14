@@ -8,6 +8,7 @@ use Framework\Renderer\RendererInterface;
 use Framework\Router;
 use Framework\Session\FlashService;
 use Framework\Session\SessionInterface;
+use Framework\Validator;
 use PDO;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -99,17 +100,24 @@ class AdminBlogAction
      */
     public function edit(Request $request): string|ResponseInterface
     {
+        $errors = null;
         $item = $this->postTable->find($request->getAttribute('id'));
         if ($request->getMethod() === 'POST') {
             $params = $this->getParams($request);
             $params['updated_at'] = date('Y-m-d H:i:s');
-            $this->postTable->update($item->id, $params);
-            $this->flash->success('L\'article a été modifié avec succés');
-            return $this->redirect('blog.admin.index');
+            $validator = $this->getValidator($request);
+            if ($validator->isValid()) {
+                $this->postTable->update($item->id, $params);
+                $this->flash->success('L\'article a été modifié avec succés');
+                return $this->redirect('blog.admin.index');
+            }
+            $errors = $validator->getErrors();
+            $params['id'] = $item->id;
+            $item = $params;
         }
         return $this->renderer->render(
             view: '@blog/admin/edit',
-            params: compact('item')
+            params: compact('item', 'errors')
         );
     }
 
@@ -121,11 +129,19 @@ class AdminBlogAction
                 'updated_at' => date('Y-m-d H:i:s'),
                 'created_at' => date('Y-m-d H:i:s')
             ]);
-            $this->postTable->insert($params);
-            $this->flash->success('L\'article a été publié avec succés');
-            return $this->redirect('blog.admin.index');
+            $validator = $this->getValidator($request);
+            if ($validator->isValid()) {
+                $this->postTable->insert($params);
+                $this->flash->success('L\'article a été publié avec succés');
+                return $this->redirect('blog.admin.index');
+            }
+            $errors = $validator->getErrors();
+            $item = $params;
         }
-        return $this->renderer->render('@blog/admin/create');
+        return $this->renderer->render(
+            view: '@blog/admin/create',
+            params: compact('item', 'errors')
+        );
     }
 
     public function delete(Request $request)
@@ -140,5 +156,22 @@ class AdminBlogAction
         return array_filter($request->getParsedBody(), function ($key) {
             return in_array($key, ['name', 'slug', 'content']);
         }, ARRAY_FILTER_USE_KEY);
+    }
+
+    /**
+     * Retourne une instance de validator
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return Validator
+     */
+    private function getValidator(Request $request): Validator
+    {
+        $validator = new Validator($request->getParsedBody());
+        $validator
+            ->required('name', 'slug', 'content')
+            ->length('content', 10)
+            ->length('name', 2, 250)
+            ->length('slug', 2, 50)
+            ->slug('slug');
+        return $validator;
     }
 }

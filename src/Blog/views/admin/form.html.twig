@@ -1,13 +1,13 @@
 <div class="mb-3">
 	<label for="name" class="form-label">Titre de l'article</label>
-	<input type="text" class="form-control" required id="name" name="name" value="{{ item.name }}" aria-describedby="titreHelp">
+	<input type="text" class="form-control" id="name" name="name" value="{{ item.name }}" aria-describedby="titreHelp">
 </div>
 <div class="mb-3">
 	<label for="slug" class="form-label">Slug de l'article</label>
-	<input type="text" class="form-control" required id="slug" name="slug" value="{{ item.slug }}" aria-describedby="titreHelp">
+	<input type="text" class="form-control" id="slug" name="slug" value="{{ item.slug }}" aria-describedby="titreHelp">
 </div>
 <div class="mb-3">
 	<label for="content" class="form-label">Contenu</label>
-	<textarea type="text" class="form-control" required name="content" rows='10' id="content">{{ item.content }}</textarea>
+	<textarea type="text" class="form-control" name="content" rows='10' id="content">{{ item.content }}</textarea>
 </div>
 <button type="submit" class="btn btn-primary">Editer</button>

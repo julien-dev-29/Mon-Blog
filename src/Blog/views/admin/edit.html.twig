@@ -4,6 +4,13 @@
 
 {% block body %}
 
+	{% if errors != null %}
+		<pre>
+	{{ dump(errors) }}
+</pre>
+	{% endif %}
+
+
 	<h1>Editer l'article
 		{{item.name}}</h1>
 
