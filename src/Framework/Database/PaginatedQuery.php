@@ -26,10 +26,22 @@ class PaginatedQuery implements AdapterInterface
         $this->countQuery = $countQuery;
         $this->entity = $entity;
     }
+
+    /**
+     * Summary of getNbResults
+     * @return int
+     */
     public function getNbResults(): int
     {
         return $this->pdo->query($this->countQuery)->fetchColumn();
     }
+
+    /**
+     * Summary of getSlice
+     * @param int $offset
+     * @param int $length
+     * @return array
+     */
     public function getSlice(int $offset, int $length): array|\Traversable
     {
         $statement = $this->pdo->prepare(query: "$this->query LIMIT :offset, :length;");

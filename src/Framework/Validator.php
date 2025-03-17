@@ -53,18 +53,18 @@ class Validator
         $value = $this->getValue($key);
         $length = mb_strlen($value);
         if (($min !== null &&
-            $max !== null) &&
-            ($length < $min || $length > $max)
+                $max !== null) &&
+            ($length <= $min || $length >= $max)
         ) {
             $this->addError($key, 'betweenLength', [$min, $max]);
         }
         if ($min !== null &&
-            $length < $min
+            $length <= $min
         ) {
             $this->addError($key, 'minLength', [$min]);
         }
         if ($max !== null &&
-            $length > $max
+            $length >= $max
         ) {
             $this->addError($key, 'maxLength', [$max]);
         }
@@ -72,14 +72,14 @@ class Validator
     }
 
     /**
-     * Vérifie que l'"l"ment est un slug
+     * Vérifie que l'élément est un slug
      * @param string $key
      * @return Validator
      */
     public function slug(string $key): self
     {
         $value = $this->getValue($key);
-        $pattern = '/^([a-z0-9]+-?)+$/';
+        $pattern = '/^[a-z0-9]+(-[a-z0-9]+)*$/';
         if ($value !== null && !preg_match(
             pattern: $pattern,
             subject: $this->params[$key]
@@ -94,7 +94,6 @@ class Validator
     {
         $value = $this->getValue($key);
         $datetime = DateTime::createFromFormat($format, $value);
-        var_dump($datetime);
         if (!$datetime) {
             $this->addError($key, 'datetime', [$format]);
         }

@@ -1,13 +1,23 @@
 <div class="mb-3">
-	<label for="name" class="form-label">Titre de l'article</label>
-	<input type="text" class="form-control" id="name" name="name" value="{{ item.name }}" aria-describedby="titreHelp">
+
+	{{ field('name', item.name, 'Titre de l\'article') }}
+
 </div>
+
 <div class="mb-3">
-	<label for="slug" class="form-label">Slug de l'article</label>
-	<input type="text" class="form-control" id="slug" name="slug" value="{{ item.slug }}" aria-describedby="titreHelp">
+
+{{ field('slug', item.slug, 'Slug de l\'article') }}
+
 </div>
+
 <div class="mb-3">
-	<label for="content" class="form-label">Contenu</label>
-	<textarea type="text" class="form-control" name="content" rows='10' id="content">{{ item.content }}</textarea>
+
+	{{ field('content', item.content, 'Contenu de l\'article', {'type':'textarea'}) }}
+
 </div>
-<button type="submit" class="btn btn-primary">Editer</button>
+
+<div class="mb-3">
+
+{{ field('created_at', item.created_at, 'Date de création', {'class': 'datepicker'}) }}
+
+</div>

@@ -4,11 +4,18 @@
 
 {% block body %}
 
+	{% if errors != null %}
+		<pre>
+	{{ dump(errors) }}
+</pre>
+	{% endif %}
+
 	<h1>Publier un article
 		{{item.name}}</h1>
 
 	<form action="{{path('blog.admin.create', {id: item.id})}}" method="post">
 		{% include "@blog/admin/form.html.twig" %}
+		<button type="submit" class="btn btn-primary">Editer</button>
 	</form>
 
 {% endblock %}
