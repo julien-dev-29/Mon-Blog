@@ -31,14 +31,27 @@ class PagerFantaExtension extends AbstractExtension
         ];
     }
 
-    public function paginate(Pagerfanta $pagerfanta, string $route, array $queryArgs = []): string
-    {
+    /**
+     * Génére la pagination
+     *
+     * @param Pagerfanta $pagerfanta
+     * @param string $route
+     * @param array $routerParams
+     * @param array $queryArgs
+     * @return string
+     */
+    public function paginate(
+        Pagerfanta $pagerfanta,
+        string $route,
+        array $routerParams = [],
+        array $queryArgs = []
+    ): string {
         $view = new TwitterBootstrap5View();
-        return $view->render($pagerfanta, function ($page) use ($route, $queryArgs) {
+        return $view->render($pagerfanta, function ($page) use ($route, $routerParams, $queryArgs) {
             if ($page > 1) {
                 $queryArgs['p'] = $page;
             }
-            return $this->router->generateURL($route, [], $queryArgs);
+            return $this->router->generateURL($route, $routerParams, $queryArgs);
         });
     }
 }

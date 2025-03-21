@@ -13,8 +13,8 @@
 	<h1>Editer l'article
 		{{item.name}}</h1>
 
-	<form action="{{path('blog.admin.edit', {id: item.id})}}" method="post">
-		{% include "@blog/admin/form.html.twig" %}
+	<form action="{{path(routePrefix ~ '.edit', {id: item.id})}}" method="post">
+		{% include viewPath ~ '/form.html.twig' %}
 		<button type="submit" class="btn btn-primary">Editer</button>
 	</form>
 {% endblock %}

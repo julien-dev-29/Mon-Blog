@@ -1,6 +1,6 @@
 {% extends "@admin/layout.html.twig" %}
 
-{% block title "Publier un article" %}
+{% block title "Editer la catégorie" %}
 
 {% block body %}
 
@@ -10,12 +10,10 @@
 </pre>
 	{% endif %}
 
-	<h1>Publier un article
-		{{item.name}}</h1>
+	<h1>Editer la catégorie {{item.name}}</h1>
 
-	<form action="{{path('blog.admin.create', {id: item.id})}}" method="post">
-		{% include "@blog/admin/form.html.twig" %}
+	<form action="{{path(routePrefix ~ '.edit', {id: item.id})}}" method="post">
+		{% include viewPath ~ '/form.html.twig' %}
 		<button type="submit" class="btn btn-primary">Editer</button>
 	</form>
-
 {% endblock %}

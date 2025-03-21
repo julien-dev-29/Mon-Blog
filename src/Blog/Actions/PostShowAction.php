@@ -10,7 +10,7 @@ use PDO;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class BlogAction
+class PostShowAction
 {
     /**
      * @var RendererInterface
@@ -23,12 +23,14 @@ class BlogAction
     private $pdo;
 
     /**
-     * Summary of router
+     * @var PostTable
+     */
+    private $postTable;
+
+    /**
      * @var Router
      */
     private $router;
-
-    private $postTable;
 
     /**
      * Trait
@@ -41,10 +43,13 @@ class BlogAction
      * @param \PDO $pdo
      * @param \Framework\Router $router
      */
-    public function __construct(RendererInterface $renderer, Router $router, PostTable $postTable)
-    {
-        $this->router = $router;
+    public function __construct(
+        RendererInterface $renderer,
+        Router $router,
+        PostTable $postTable
+    ) {
         $this->renderer = $renderer;
+        $this->router = $router;
         $this->postTable = $postTable;
     }
 
@@ -55,35 +60,9 @@ class BlogAction
      */
     public function __invoke(Request $request): MessageInterface|string
     {
-        if ($request->getAttribute('id')) {
-            return $this->show(request: $request);
-        }
-        return $this->index($request);
-    }
-
-    /**
-     * Summary of index
-     * @return string
-     */
-    public function index(Request $request): string
-    {
-        $params = $request->getQueryParams();
-        $posts = $this->postTable->findPaginated(perPage: 12, currentPage: $params['p'] ?? 1);
-        return $this->renderer->render(
-            view: '@blog/index',
-            params: compact(var_name: 'posts')
-        );
-    }
-
-    /**
-     * Summary of show
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return string|\Psr\Http\Message\MessageInterface
-     */
-    public function show(Request $request): MessageInterface|string
-    {
         $slug = $request->getAttribute('slug');
-        $post = $this->postTable->find($request->getAttribute('id'));
+        $id = $request->getAttribute('id');
+        $post = $this->postTable->findWithCategory($id);
         if ($post->slug !== $slug) {
             return $this->redirect(path: 'blog.show', params: [
                 'slug' => $post->slug,
@@ -92,7 +71,7 @@ class BlogAction
         }
         return $this->renderer->render(
             view: '@blog/show',
-            params: compact(var_name: 'post')
+            params: compact(var_name: ['post'])
         );
     }
 }

@@ -3,7 +3,9 @@
 namespace Framework;
 
 use DateTime;
+use Framework\Database\Table;
 use Framework\Validator\ValidationError;
+use PDO;
 
 class Validator
 {
@@ -96,6 +98,40 @@ class Validator
         $datetime = DateTime::createFromFormat($format, $value);
         if (!$datetime) {
             $this->addError($key, 'datetime', [$format]);
+        }
+        return $this;
+    }
+
+    public function exists(string $key, string $table, PDO $pdo): self
+    {
+        $id = $this->getValue($key);
+        $statement = $pdo->prepare("SELECT id FROM $table WHERE id = ?");
+        $statement->execute([$id]);
+        if ($statement->fetchColumn() === false) {
+            $this->addError(
+                key: $key,
+                rule: 'exists',
+                attributes: [$table]
+            );
+        }
+        return $this;
+    }
+
+    public function unique(string $key, string $table, PDO $pdo, ?int $exclude = null): self
+    {
+        $value = $this->getValue($key);
+        $query = "SELECT id FROM $table WHERE $key = ?";
+        $params = [$value];
+        if ($exclude !== null) {
+            $query .= " AND id != ?";
+            $params[] = $exclude;
+        }
+        $statement = $pdo->prepare(
+            query: $query
+        );
+        $statement->execute($params);
+        if ($statement->fetchColumn() !== false) {
+            $this->addError($key, 'unique', [$value]);
         }
         return $this;
     }

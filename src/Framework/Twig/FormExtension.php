@@ -24,7 +24,8 @@ class FormExtension extends AbstractExtension
     }
 
     /**
-     * Génére un champ de type input ou textarea pour les formulaires
+     * Génére un champ pour les formulaires
+     *
      * @param array $context
      * @param string $key
      * @param mixed $value
@@ -34,32 +35,29 @@ class FormExtension extends AbstractExtension
      */
     public function field(array $context, string $key, $value, ?string $label = null, array $options = []): string
     {
-        // Errors
         $error = $this->getErrors(context: $context, key: $key);
-        $error ? $feedback = 'is-invalid' : $feedback = 'is-valid';
-
+        $error ? $feedback = 'is-invalid' : $feedback = '';
         $attributes = [
             'class' => $options['class'] ?? '',
             'id' => $key,
             'name' => $key
         ];
-
-        // Value
         $value = $this->convertValue($value);
-
-        // Type
         $type = $options['type'] ?? 'text';
-        $type === 'textarea' ?
-            $html = $this->textarea($key, $value, $feedback)
-            :
+        if ($type === 'textarea') {
+            $html = $this->textarea($key, $value, $feedback);
+        } elseif (array_key_exists('options', $options)) {
+            $html = $this->select($value, $options['options'], $attributes);
+        } else {
             $html = $this->input($attributes, $value, $feedback);
+        }
         $html .= $this->getErrorHTMLElement($key, $error);
-
         return "<label for=\"$key\" class=\"form-label\">$label</label>$html";
     }
 
     /**
-     * Summary of input
+     * Génére un champ input
+     *
      * @param string $key
      * @param string|null $value
      * @param string|null $feedback
@@ -77,7 +75,8 @@ class FormExtension extends AbstractExtension
     }
 
     /**
-     * Summary of textarea
+     * Génére un champ testarea
+     *
      * @param string $key
      * @param mixed $value
      * @param mixed $feedback
@@ -86,6 +85,31 @@ class FormExtension extends AbstractExtension
     public function textarea(string $key, ?string $value, ?string $feedback)
     {
         return "<textarea class=\"form-control $feedback\" name=\"$key\" rows=\"10\" id=\"$key\">$value</textarea>";
+    }
+
+    /**
+     * Génére un champ select
+     *
+     * @param string $value
+     * @param array $options
+     * @param array $attributes
+     * @return string
+     */
+    public function select(string $value, array $options, array $attributes)
+    {
+        $id = $attributes['id'];
+        $name = $attributes['name'];
+        $htmlOptions = array_reduce(
+            array: array_keys($options),
+            callback: function (string $html, string $key) use ($options, $value) {
+                $selected = $key === $value ? "selected" : "";
+                return "$html<option value=\"$key\" $selected>$options[$key]</option>";
+            },
+            initial: ""
+        );
+        return "<select class=\"form-control\" id=\"$id\" name=\"$name\">
+        $htmlOptions
+        </select>";
     }
 
     /**
@@ -98,9 +122,8 @@ class FormExtension extends AbstractExtension
     {
         if ($error) {
             return "<div id=\"$key\" class=\"invalid-feedback\">$error</div>";
-        } else {
-            return "<div id=\"$key\" class=\"valid-feedback\">Le champ $key est valide!</div>";
         }
+        return null;
     }
 
     /**

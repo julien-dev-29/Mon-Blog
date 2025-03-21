@@ -2,22 +2,20 @@
 
 namespace Tests\Framework\Blog\Actions;
 
-use App\Blog\Actions\BlogAction;
+use App\Blog\Actions\PostIndexAction;
+use App\Blog\Actions\PostShowAction;
 use App\Blog\Entity\Post;
 use App\Blog\Table\PostTable;
 use Framework\Renderer\RendererInterface;
 use Framework\Router;
 use GuzzleHttp\Psr7\ServerRequest;
-use PDO;
-use PDOStatement;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
-class BlogActionTest extends TestCase
+class PostShowActionTest extends TestCase
 {
     /**
      * Summary of action
-     * @var BlogAction
+     * @var PostIndexAction
      */
     private $action;
     private $renderer;
@@ -27,16 +25,11 @@ class BlogActionTest extends TestCase
 
     public function setUp(): void
     {
-        // Render
         $this->renderer = $this->createMock(RendererInterface::class);
         $this->renderer->method('render')->willReturn('');
-
-        // PostTable
         $this->postTable = $this->createMock(PostTable::class);
-
-        // Router
         $this->router = $this->createMock(Router::class);
-        $this->action = new BlogAction(
+        $this->action = new PostShowAction(
             renderer: $this->renderer,
             router: $this->router,
             postTable: $this->postTable
@@ -47,7 +40,7 @@ class BlogActionTest extends TestCase
     {
         $post = $this->makePost(9, 'demo-test');
         $this->router->method('generateURL')->willReturn('/demo2');
-        $this->postTable->method('find')->willReturn($post);
+        $this->postTable->method('findWithCategory')->willReturn($post);
         $request = (new ServerRequest('GET', '/'))
             ->withAttribute('id', $post->id)
             ->withAttribute('slug', 'demo3');
@@ -59,7 +52,7 @@ class BlogActionTest extends TestCase
     public function testShowRender()
     {
         $post = $this->makePost(9, 'demo-test');
-        $this->postTable->method('find')->willReturn($post);
+        $this->postTable->method('findWithCategory')->willReturn($post);
         $request = (new ServerRequest('GET', '/'))
             ->withAttribute('id', $post->id)
             ->withAttribute('slug', $post->slug);
@@ -68,6 +61,13 @@ class BlogActionTest extends TestCase
         $this->assertEquals(true, true);
     }
 
+    /**
+     * Retourne une nouvelle instance de Post
+     * 
+     * @param int $id
+     * @param string $slug
+     * @return Post
+     */
     public function makePost(int $id, string $slug): Post
     {
         $post = new Post();

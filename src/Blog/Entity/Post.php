@@ -12,6 +12,8 @@ class Post
     public $content;
     public $created_at;
     public $updated_at;
+    public $category_id;
+    public $category_name;
     public function __construct()
     {
         if ($this->created_at) {

@@ -55,7 +55,7 @@ class Router
      * @param string|null $prefixName
      * @return void
      */
-    public function crudBlog(string $path, $callable, ?string $prefixName)
+    public function crud(string $path, $callable, ?string $prefixName)
     {
         $this->get($path, $callable, "$prefixName.index");
         $this->get("$path/[i:id]", $callable, "$prefixName.edit");

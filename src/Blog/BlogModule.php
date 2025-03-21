@@ -2,9 +2,13 @@
 
 namespace App\Blog;
 
-use App\Blog\Actions\AdminBlogAction;
 use App\Blog\Actions\BlogAction;
+use App\Blog\Actions\CategoryCrudAction;
+use App\Blog\Actions\CategoryShowAction;
 use App\Blog\Actions\ChatBlogAction;
+use App\Blog\Actions\PostCrudAction;
+use App\Blog\Actions\PostIndexAction;
+use App\Blog\Actions\PostShowAction;
 use Framework\Module;
 use Framework\Renderer\RendererInterface;
 use Framework\Router;
@@ -32,17 +36,23 @@ class BlogModule extends Module
         $router = $container->get(Router::class);
         $router->get(
             path: $container->get('blog.prefix'),
-            callable: BlogAction::class,
+            callable: PostIndexAction::class,
             name: 'blog.index'
         );
         $router->get(
             path: $container->get('blog.prefix') . '/[*:slug]-[i:id]',
-            callable: BlogAction::class,
+            callable: PostShowAction::class,
             name: 'blog.show'
+        );
+        $router->get(
+            path: $container->get('blog.prefix') . '/category/[*:slug]',
+            callable: CategoryShowAction::class,
+            name: 'blog.category'
         );
         if ($container->has('admin.prefix')) {
             $prefix = $container->get('admin.prefix');
-            $router->crudBlog("$prefix/posts", AdminBlogAction::class, 'blog.admin');
+            $router->crud("$prefix/posts", PostCrudAction::class, 'blog.admin');
+            $router->crud("$prefix/categories", CategoryCrudAction::class, 'blog.categories.admin');
         }
         if ($container->has('chat.prefix')) {
             $prefix = $container->get('chat.prefix');

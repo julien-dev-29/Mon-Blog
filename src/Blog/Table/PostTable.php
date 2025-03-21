@@ -4,103 +4,80 @@ namespace App\Blog\Table;
 
 use App\Blog\Entity\Post;
 use Framework\Database\PaginatedQuery;
+use Framework\Database\Table;
 use Pagerfanta\Pagerfanta;
-use PDO;
 
-class PostTable
+class PostTable extends Table
 {
     /**
-     * @var PDO
+     * @var string
      */
-    private $pdo;
-    public function __construct(PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    protected $entity = Post::class;
 
     /**
-     * Summary of findPaginated
+     * @var string
+     */
+    protected $table = 'posts';
+
+    /**
+     * Summary of findPaginatedPublic
      * @param int $perPage
+     * @param int $currentPage
      * @return Pagerfanta
      */
-    public function findPaginated(int $perPage, int $currentPage): Pagerfanta
+    public function findPaginatedPublic(int $perPage, int $currentPage): Pagerfanta
     {
         $query = new PaginatedQuery(
             pdo: $this->pdo,
-            query: 'SELECT * FROM posts ORDER BY created_at DESC',
-            countQuery: 'SELECT COUNT(id) FROM posts',
-            entity: Post::class
+            query: "SELECT p.*, c.name category_name, c.slug category_slug  
+            FROM posts p 
+            LEFT JOIN categories c ON p.category_id = c.id 
+            ORDER BY created_at DESC",
+            countQuery: "SELECT COUNT(id) FROM $this->table",
+            entity: $this->entity
         );
         return new Pagerfanta($query)
             ->setMaxPerPage($perPage)
             ->setCurrentPage($currentPage);
     }
 
-    /**
-     * Trouve un article par son id
-     *
-     * @return Post|null
-     */
-    public function find(int $id): ?Post
+    public function findPaginatedPublicByCategory(int $perPage, int $currentPage, int $categoryID): Pagerfanta
     {
-        $query = $this->pdo->prepare(query: 'SELECT * FROM posts WHERE id = ?;');
-        $query->execute(params: [$id]);
-        $query->setFetchMode(PDO::FETCH_CLASS, Post::class);
-        return $query->fetch() ?: null;
+        $query = new PaginatedQuery(
+            pdo: $this->pdo,
+            query: "SELECT p.*, c.name category_name, c.slug category_slug  
+            FROM posts p 
+            LEFT JOIN categories c ON p.category_id = c.id 
+            WHERE p.category_id = :category
+            ORDER BY created_at DESC",
+            countQuery: "SELECT COUNT(id) FROM $this->table WHERE category_id = :category",
+            entity: $this->entity,
+            params: ['category' => $categoryID]
+        );
+        return new Pagerfanta($query)
+            ->setMaxPerPage($perPage)
+            ->setCurrentPage($currentPage);
+    }
+
+    public function findWithCategory(int $id)
+    {
+        return $this->fetchOrFail(
+            query: "SELECT p.*, c.name category_name, c.slug category_slug
+                    FROM posts p LEFT JOIN categories c
+                    ON p.category_id = c.id
+                    WHERE p.id = ?",
+            params: [$id]
+        );
     }
 
     /**
-     * Met à jour un article
-     * @param int $id
-     * @param array $fields
-     * @return bool
-     */
-    public function update(int $id, array $params): bool
-    {
-        $fieldQuery = $this->buildFieldQuery($params);
-        $params['id'] = $id;
-        $statement = $this->pdo->prepare("UPDATE posts SET $fieldQuery WHERE id = :id");
-        return $statement->execute($params);
-    }
-
-    /**
-     * Insere un article en base de données
-     * @param int $id
-     * @param array $params
-     * @return bool
-     */
-    public function insert(array $params): bool
-    {
-        $fields = array_keys($params);
-        $values = array_map(function ($field) {
-            return ":$field";
-        }, $fields);
-        $statement = $this->pdo->prepare("INSERT INTO posts 
-            (" . join(',', $fields) . ") 
-            VALUES (" . join(',', $values) . ")");
-        return $statement->execute($params);
-    }
-
-    /**
-     * Supprime un article de la base de données
-     * @param int $id
-     * @return bool
-     */
-    public function delete(int $id)
-    {
-        $statement = $this->pdo->prepare('DELETE FROM posts WHERE id = ?');
-        return $statement->execute([$id]);
-    }
-
-    /**
-     * Summary of buildFieldQuery
-     * @param array $params
      * @return string
      */
-    private function buildFieldQuery(array $params)
+    public function paginationQuery(): string
     {
-        return join(', ', array_map(function ($field) {
-            return "$field = :$field";
-        }, array_keys($params)));
+        return "SELECT p.id, p.name, c.name category_name
+        FROM $this->table p
+        LEFT JOIN categories c ON p.category_id = c.id
+        ORDER BY created_at DESC";
     }
 }

@@ -3,7 +3,7 @@
 namespace Tests\Framework\Twig;
 
 use DateTime;
-use Framework\Twig\{TextExtension, TimeExtension};
+use Framework\Twig\{TimeExtension};
 use PHPUnit\Framework\TestCase;
 
 class TimeExtensionTest extends TestCase

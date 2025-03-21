@@ -4,8 +4,9 @@ namespace Tests\Framework;
 
 use Framework\Validator;
 use PHPUnit\Framework\TestCase;
+use Tests\DatabaseTestCase;
 
-class ValidatorTest extends TestCase
+class ValidatorTest extends DatabaseTestCase
 {
     private function createValidator(array $params)
     {
@@ -94,5 +95,61 @@ class ValidatorTest extends TestCase
         $this->assertCount(0, $this->createValidator($params1)->datetime('date')->getErrors());
         $this->assertCount(0, $this->createValidator($params2)->datetime('date')->getErrors());
         $this->assertCount(0, $this->createValidator($params3)->datetime('date')->getErrors());
+    }
+
+    public function testExists()
+    {
+        $pdo = $this->getPDO();
+        $pdo->exec('CREATE TABLE test (
+            id INTEGER PRIMARY KEY,
+            name VARCHAR(255)
+        )');
+        $pdo->exec('INSERT INTO test (name) VALUES ("a1")');
+        $pdo->exec('INSERT INTO test (name) VALUES ("a2")');
+        $this->assertTrue(condition: $this->createValidator(
+            params: ['category' => 1]
+        )->exists(
+                key: 'category',
+                table: 'test',
+                pdo: $pdo
+            )->isValid());
+        $this->assertFalse(condition: $this->createValidator(
+            params: ['category' => 1321321]
+        )->exists(
+                key: 'category',
+                table: 'test',
+                pdo: $pdo
+            )->isValid());
+    }
+
+    public function testUnnique()
+    {
+        $pdo = $this->getPDO();
+        $pdo->exec('CREATE TABLE test (
+            id INTEGER PRIMARY KEY,
+            name VARCHAR(255)
+        )');
+        $pdo->exec('INSERT INTO test (name) VALUES ("a1")');
+        $pdo->exec('INSERT INTO test (name) VALUES ("a2")');
+        $this->assertFalse($this->createValidator(
+            params: ['name' => 'a1']
+        )
+            ->unique('name', 'test', $pdo)
+            ->isValid());
+        $this->assertTrue($this->createValidator(
+            params: ['name' => 'a111']
+        )
+            ->unique('name', 'test', $pdo)
+            ->isValid());
+        $this->assertTrue($this->createValidator(
+            params: ['name' => 'a1']
+        )
+            ->unique('name', 'test', $pdo, 1)
+            ->isValid());
+        $this->assertFalse($this->createValidator(
+            params: ['name' => 'a2']
+        )
+            ->unique('name', 'test', $pdo, 1)
+            ->isValid());
     }
 }

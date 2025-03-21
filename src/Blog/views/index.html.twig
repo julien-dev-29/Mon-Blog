@@ -1,28 +1,77 @@
 {% extends "layout.html.twig" %}
-{% block title 'Mon Blog' %}
+{% block title %}
+	{% if category %}
+		{{category.name}}
+	{% else %}
+		Le Blog
+	{% endif %}
+{% endblock %}
 {% block body %}
-	<h1>Bienvenue sur le Blog</h1>
-	<div class="row row-cols-md-4 pt-4">
-		{% for post in posts %}
-			<div class="card">
-				<div class="card-header">
-					<h2>
-						<a href="{{path('blog.show', {slug: post.slug, id: post.id})}}">{{post.name}}</a>
-					</h2>
-				</div>
-				<div class="card-body">
-					<p>{{ post.content | excerpt(200) | nl2br }}</p>
-					<p class="text-muted">{{ post.created_at | ago}}</p>
-				</div>
-				<div class="card-footer">
-					<a href="{{path('blog.show', {slug: post.slug, id: post.id})}}" class="btn btn-primary">Voir l'article</a>
-				</div>
-			</div>
-		{% endfor %}
 
+	{% if category %}
+		<h1>Catégorie:
+			{{category.name}}
+			{% if page > 1 %}, page
+				{{page}}
+			{% endif %}
+		</h1>
+	{% else %}
+		<h1>Le Blog
+			{% if page > 1 %}, page
+				{{page}}
+			{% endif %}
+		{% endif %}
+	</h1>
+
+	<div class="row mt-5">
+		<div class="col-md-9">
+			{% if posts is empty %}
+				<h2>Aucun article dans cette catégorie !</h2>
+			{% endif %}
+			<div class="row row-cols-1 row-cols-lg-3 g-4">
+				{% for post in posts %}
+					<div class="col">
+						<div class="card shadow-sm" style="width: 18rem;">
+							{% if post.category_name %}
+								<div class="card-header text-warning">{{post.category_name}}</div>
+							{% endif %}
+
+							<img src="https://picsum.photos/seed/{{ post.id }}/300/200" class="{% if post.category_name %} img-fluid {% else %} card-img-top {% endif %}" alt="...">
+							<div class="card-body">
+								<h5 class="card-title">{{post.name}}</h5>
+								<p class="card-text">{{post.content | excerpt | nl2br}}</p>
+								<a href="{{path('blog.show', {slug: post.slug, id: post.id}) }}" class="btn btn-primary">Voir l'article</a>
+							</div>
+							<div class="card-footer">
+								<small class="text-body-secondary">{{post.created_at | ago}}</small>
+							</div>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div class="col-md-3 d-flex justify-content-center">
+			<div class="list-group position-fixed shadow-sm">
+				{% for c in categories %}
+				
+					<a href="{{path('blog.category', {slug: c.slug})}}" class="list-group-item list-group-item-action list-group-item-info {% if c.id == category.id %}active{% endif %}">{{c.name}}</a>
+				{% endfor %}
+			</div>
+		</div>
 	</div>
-	<div class="d-flex justify-content-center align-content-center mt-4">
-		{{ paginate(posts, 'blog.index') }}
-	</div>
+
+
+	{% if posts is not empty %}
+		{% if category %}
+			<div class="d-flex justify-content-center align-content-center mt-5">
+				{{ paginate(posts, 'blog.category', {slug: category.slug}) }}
+			</div>
+		{% else %}
+			<div class="d-flex justify-content-center align-content-center mt-5">
+				{{ paginate(posts, 'blog.index') }}
+			</div>
+		{% endif %}
+	{% endif %}
+
 
 {% endblock %}

@@ -8,13 +8,15 @@ class ValidationError
     private $rule;
     private $attributes;
     private $messages = [
-        'required' => 'Le champs %s est requis',
-        'empty' => 'Le champs %s ne peut pas être vide',
-        'slug' => 'Le champs %s n\'est pas un slug valide',
-        'minLength' => 'Le champs %s doit contenir plus de %d caractères',
-        'maxLength' => 'Le champs %s doit contenir moins de %d caractères',
-        'betweenLength' => 'Le champs %s doit contenir entre %d et %d caractères',
-        'datetime' => 'Le champs %s doit être une date valide'
+        'required' => 'Le champ %s est requis',
+        'empty' => 'Le champ %s ne peut pas être vide',
+        'slug' => 'Le champ %s n\'est pas un slug valide',
+        'minLength' => 'Le champ %s doit contenir plus de %d caractères',
+        'maxLength' => 'Le champ %s doit contenir moins de %d caractères',
+        'betweenLength' => 'Le champ %s doit contenir entre %d et %d caractères',
+        'datetime' => 'Le champ %s doit être une date valide',
+        'exists' => 'Le champ %s n\'éxiste pas dans la table %s',
+        'unique' => 'Le champ %s doit être unique'
     ];
     public function __construct(string $key, string $rule, array $attributes = [])
     {

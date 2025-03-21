@@ -1,0 +1,20 @@
+{% extends "@admin/layout.html.twig" %}
+
+{% block title "Publier un article" %}
+
+{% block body %}
+
+	{% if errors != null %}
+		<pre>
+	{{ dump(errors) }}
+</pre>
+	{% endif %}
+
+	<h1>Publier un article</h1>
+
+	<form action="{{path(routePrefix ~ '.create')}}" method="post">
+		{% include viewPath ~ '/form.html.twig' %}
+		<button type="submit" class="btn btn-primary">Publier</button>
+	</form>
+
+{% endblock %}
