@@ -196,15 +196,13 @@ class Table
     }
 
     /**
-     * @param array $params
-     * @return string
+     * Retourne le nombre d'enregistreemnts
+     *
+     * @return int
      */
-    private function buildFieldQuery(array $params): string
+    public function count(): int
     {
-        return join(separator: ', ', array: array_map(
-            callback: fn($field): string => "$field = :$field",
-            array: array_keys($params)
-        ));
+        return $this->fetchColumn("SELECT COUNT(id) FROM $this->table");
     }
 
     /**
@@ -241,5 +239,33 @@ class Table
         $query = $this->pdo->prepare("SELECT id FROM $this->table WHERE id = ?");
         $query->execute([$id]);
         return $query->fetchColumn() !== false;
+    }
+
+    /**
+     * @param array $params
+     * @return string
+     */
+    private function buildFieldQuery(array $params): string
+    {
+        return join(separator: ', ', array: array_map(
+            callback: fn($field): string => "$field = :$field",
+            array: array_keys($params)
+        ));
+    }
+
+    /**
+     * Retourne la première colonne
+     *
+     * @param mixed $query
+     * @param mixed $params
+     */
+    private function fetchColumn($query, $params = [])
+    {
+        $query = $this->pdo->prepare($query);
+        $query->execute($params);
+        if ($this->entity) {
+            $query->setFetchMode(PDO::FETCH_CLASS, $this->entity);
+        }
+        return $query->fetchColumn();
     }
 }

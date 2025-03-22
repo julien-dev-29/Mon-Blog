@@ -44,7 +44,8 @@ class TwigRenderer implements RendererInterface
     }
 
     /**
-     * Summary of render
+     * Rend une vue
+     *
      * @param string $view
      * @param array|null $params
      * @return string
@@ -52,5 +53,15 @@ class TwigRenderer implements RendererInterface
     public function render(string $view, array|null $params = []): string
     {
         return $this->twig->render("$view.html.twig", $params);
+    }
+
+    /**
+     * Retourne l'instance de twig
+     *
+     * @return Environment
+     */
+    public function getTwig(): Environment
+    {
+        return $this->twig;
     }
 }

@@ -21,7 +21,7 @@ class ValidatorTest extends DatabaseTestCase
             ->required('name', 'content')
             ->getErrors();
         $this->assertCount(1, $errors);
-        $this->assertEquals("Le champs content est requis", (string) $errors['content']);
+        $this->assertEquals("Le champ content est requis", (string) $errors['content']);
     }
 
     public function testRequiredSuccess()
@@ -78,7 +78,7 @@ class ValidatorTest extends DatabaseTestCase
         ];
         $errors = $this->createValidator($params)->length('slug', 12)->getErrors();
         $this->assertCount(1, $errors);
-        $this->assertEquals('Le champs slug doit contenir plus de 12 caractères', (string) $errors['slug']);
+        $this->assertEquals('Le champ slug doit contenir plus de 12 caractères', (string) $errors['slug']);
         $this->assertCount(0, $this->createValidator($params)->length('slug', 3)->getErrors());
         $this->assertCount(1, $this->createValidator($params)->length('slug', 12)->getErrors());
         $this->assertCount(1, $this->createValidator($params)->length('slug', 3, 4)->getErrors());

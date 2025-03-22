@@ -83,4 +83,12 @@ class TableTest extends TestCase
         $this->assertInstanceOf(stdClass::class, $category);
         $this->assertEquals(1, (int) $category->id);
     }
+
+    public function testCount()
+    {
+        $this->table->getPDO()->exec('INSERT INTO test (name) VALUES ("a1")');
+        $this->table->getPDO()->exec('INSERT INTO test (name) VALUES ("a2")');
+        $this->table->getPDO()->exec('INSERT INTO test (name) VALUES ("a1")');
+        $this->assertEquals(3, $this->table->count());
+    }
 }
