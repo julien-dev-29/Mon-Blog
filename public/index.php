@@ -1,12 +1,17 @@
 <?php
 
 use App\Chat\ChatModule;
+use Middlewares\Whoops;
+use Framework\Middleware\TrailingSlashMiddleware;
+use Framework\Middleware\MethodMiddleware;
+use Framework\Middleware\RouterMiddleware;
+use Framework\Middleware\DispatcherMiddleware;
+use Framework\Middleware\NotFoundMiddleware;
 
 require dirname(path: __DIR__) . '/vendor/autoload.php';
 
 use App\Admin\AdminModule;
 use App\Blog\BlogModule;
-use DI\ContainerBuilder;
 use Framework\App;
 use GuzzleHttp\Psr7\ServerRequest;
 use function Http\Response\send;
@@ -17,21 +22,16 @@ $modules = [
     ChatModule::class
 ];
 
-$builder = new ContainerBuilder();
-$builder->addDefinitions(dirname(__DIR__) . '/config/config.php');
-foreach ($modules as $module) {
-    if ($module::DEFINITIONS !== null) {
-        $builder->addDefinitions($module::DEFINITIONS);
-    }
-}
-$builder->addDefinitions(dirname(__DIR__) . '/config.php');
-
-$container = $builder->build();
-
-$app = new App(
-    container: $container,
-    modules: $modules
-);
+$app = new App(dirname(__DIR__) . '/config/config.php')
+    ->addModule(AdminModule::class)
+    ->addModule(BlogModule::class)
+    ->addModule(ChatModule::class)
+    ->pipe(Whoops::class)
+    ->pipe(TrailingSlashMiddleware::class)
+    ->pipe(MethodMiddleware::class)
+    ->pipe(RouterMiddleware::class)
+    ->pipe(DispatcherMiddleware::class)
+    ->pipe(NotFoundMiddleware::class);
 
 if (php_sapi_name() !== "cli") {
     $response = $app->run(request: ServerRequest::fromGlobals());
