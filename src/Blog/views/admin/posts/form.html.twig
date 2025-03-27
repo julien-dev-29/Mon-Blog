@@ -1,32 +1,20 @@
+{{ csrf_input() }}
+
 <div class="row">
 	<div class="mb-3 col-md-4">
-
 		{{ field('name', item.name, 'Titre de l\'article') }}
-
-</div>
-
-<div class="mb-3 col-md-4">
-
-	{{ field('category_id', item.category_id ?? "", 'Catégorie de l\'article', {options: categories}) }}
-
+    </div>
+    <div class="mb-3 col-md-4">
+	    {{ field('category_id', item.category_id ?? "", 'Catégorie de l\'article', {options: categories}) }}
 	</div>
-
 	<div class="mb-3 col-md-4">
-
 		{{ field('slug', item.slug, 'Slug de l\'article') }}
-
-</div>
-
+    </div>
 </div>
 
 <div class="mb-3">
-
 	{{ field('content', item.content, 'Contenu de l\'article', {'type':'textarea'}) }}
-
 	</div>
-
 	<div class="mb-3">
-
 		{{ field('created_at', item.created_at, 'Date de création', {'class': 'datepicker'}) }}
-
 	</div>

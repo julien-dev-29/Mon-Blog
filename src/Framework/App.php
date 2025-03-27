@@ -82,6 +82,7 @@ class App implements RequestHandlerInterface
         } elseif ($middleware instanceof MiddlewareInterface) {
             return $middleware->process($request, $this);
         }
+        return $middleware->process($request, $this);
     }
 
     /**
@@ -113,7 +114,7 @@ class App implements RequestHandlerInterface
      *
      * @return ContainerInterface
      */
-    private function getContainer(): ContainerInterface
+    public function getContainer(): ContainerInterface
     {
         if ($this->container === null) {
             $builder = new ContainerBuilder();

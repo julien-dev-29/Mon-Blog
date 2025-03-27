@@ -11,7 +11,7 @@
 	</head>
 
 	<body class="min-vh-100 d-flex flex-column">
-		<nav class="navbar navbar-expand-lg bg-body shadow border-bottom border-info" data-bs-theme="dark">
+		<nav class="navbar navbar-expand-lg shadow" data-bs-theme="dark">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="{{path('blog.index')}}">Le Blog</a>
 				<button type="button" class="btn btn-secondary">
@@ -37,6 +37,9 @@
 				</div>
 			</div>
 		</nav>
+		<div class="container">
+			<hr class="">
+		</div>
 
 		<div class="container flex-grow-1 p-4"> {% block body %}{% endblock %}
 			</div>

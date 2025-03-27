@@ -1,5 +1,4 @@
 <?php
-
 namespace Framework\Middleware;
 
 use Framework\Router\Route;
@@ -10,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class DispatcherMiddleware
 {
-
     /**
      *
      * @var ContainerInterface

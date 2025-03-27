@@ -1,6 +1,7 @@
 <?php
 
 use App\Chat\ChatModule;
+use Framework\Middleware\CsrfMiddleware;
 use Middlewares\Whoops;
 use Framework\Middleware\TrailingSlashMiddleware;
 use Framework\Middleware\MethodMiddleware;
@@ -29,6 +30,7 @@ $app = new App(dirname(__DIR__) . '/config/config.php')
     ->pipe(Whoops::class)
     ->pipe(TrailingSlashMiddleware::class)
     ->pipe(MethodMiddleware::class)
+    ->pipe(CsrfMiddleware::class)
     ->pipe(RouterMiddleware::class)
     ->pipe(DispatcherMiddleware::class)
     ->pipe(NotFoundMiddleware::class);

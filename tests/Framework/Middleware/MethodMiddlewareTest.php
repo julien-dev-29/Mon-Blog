@@ -1,5 +1,4 @@
 <?php
-
 namespace Tests\Framework\Middleware;
 
 use Framework\Middleware\MethodMiddleware;
