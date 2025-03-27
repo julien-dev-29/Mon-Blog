@@ -8,14 +8,14 @@ use Framework\Middleware\MethodMiddleware;
 use Framework\Middleware\RouterMiddleware;
 use Framework\Middleware\DispatcherMiddleware;
 use Framework\Middleware\NotFoundMiddleware;
-
-require dirname(path: __DIR__) . '/vendor/autoload.php';
-
 use App\Admin\AdminModule;
 use App\Blog\BlogModule;
 use Framework\App;
 use GuzzleHttp\Psr7\ServerRequest;
 use function Http\Response\send;
+
+chdir(dirname(__DIR__));
+require 'vendor/autoload.php';
 
 $modules = [
     AdminModule::class,
@@ -23,7 +23,7 @@ $modules = [
     ChatModule::class
 ];
 
-$app = new App(dirname(__DIR__) . '/config/config.php')
+$app = new App('config/config.php')
     ->addModule(AdminModule::class)
     ->addModule(BlogModule::class)
     ->addModule(ChatModule::class)

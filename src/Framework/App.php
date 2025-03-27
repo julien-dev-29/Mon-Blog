@@ -1,8 +1,8 @@
 <?php
-
 namespace Framework;
 
 use DI\ContainerBuilder;
+use Dotenv\Dotenv;
 use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -118,6 +118,12 @@ class App implements RequestHandlerInterface
     {
         if ($this->container === null) {
             $builder = new ContainerBuilder();
+            $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
+            $dotenv->load();
+            $env = $_ENV['ENV'] ?? 'production';
+            if ($env === 'production') {
+                $builder->enableCompilation('tmp/proxies');
+            }
             $builder->addDefinitions($this->definition);
             foreach ($this->modules as $module) {
                 if ($module::DEFINITIONS !== null) {

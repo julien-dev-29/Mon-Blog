@@ -1,5 +1,4 @@
 <?php
-
 namespace Framework;
 
 use AltoRouter;
@@ -16,13 +15,13 @@ class Router
      * @var AltoRouter
      */
     private $router;
-    public function __construct()
+
+    public function __construct(?string $cache = null)
     {
         $this->router = new AltoRouter();
     }
+
     /**
-     * Summary of get
-     *
      * @param string $path
      * @param string|callable $callable
      * @param string $name
@@ -33,16 +32,34 @@ class Router
         $this->router->map("GET", $path, $callable, $name);
     }
 
+    /**
+     * @param string $path
+     * @param mixed $callable
+     * @param mixed $name
+     * @return void
+     */
     public function post(string $path, $callable, ?string $name = null)
     {
         $this->router->map("POST", $path, $callable, $name);
     }
 
+    /**
+     * @param string $path
+     * @param mixed $callable
+     * @param mixed $name
+     * @return void
+     */
     public function put(string $path, $callable, ?string $name = null)
     {
         $this->router->map("PUT", $path, $callable, $name);
     }
 
+    /**
+     * @param string $path
+     * @param mixed $callable
+     * @param mixed $name
+     * @return void
+     */
     public function delete(string $path, $callable, ?string $name = null)
     {
         $this->router->map("DELETE", $path, $callable, $name);

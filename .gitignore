@@ -3,3 +3,5 @@ composer.lock
 .phpunit.result.cache
 config/
 config.php
+/tmp
+.env
