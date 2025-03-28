@@ -1,8 +1,10 @@
+
 # Mon Blog
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![PHP Version](https://img.shields.io/badge/php-%3E%3D7.4-8892BF)
+
 
 Mon Blog est un projet PHP conçu pour fournir une structure légère et modulaire pour le développement d'applications web. Il inclut des fonctionnalités pour la gestion des routes, l'interaction avec une base de données, et la création de vues dynamiques.
 
