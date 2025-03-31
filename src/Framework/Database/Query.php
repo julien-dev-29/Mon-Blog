@@ -1,25 +1,77 @@
 <?php
 namespace Framework\Database;
 
+use ArrayAccess;
+use Exception;
+use Iterator;
 use PDO;
 
 class Query
 {
+    /**
+     * @var array 
+     */
     private $select;
+
+    /**
+     * @var string
+     */
     private $from;
+
+    /**
+     * @var array
+     */
     private $where = [];
+
+    /**
+     * @var string
+     */
     private $group;
+
+    /**
+     * @var string
+     */
     private $order;
+
+    /**
+     * @var array
+     */
     private $limit;
+
+    /**
+     * @var array
+     */
     private $params;
+
+    /**
+     * @var string
+     */
+    private $entity;
+
     /**
      * @var PDO
      */
     private $pDO;
 
+
+    /**
+     * @param mixed $pDO
+     */
     public function __construct(?PDO $pDO = null)
     {
         $this->pDO = $pDO;
+    }
+
+    /**
+     * Summary of all
+     * @return QueryResult
+     */
+    public function all(): QueryResult
+    {
+        return new QueryResult(
+            records: $this->execute()->fetchAll(PDO::FETCH_ASSOC),
+            entity: $this->entity
+        );
     }
 
     /**
@@ -53,24 +105,39 @@ class Query
         return $this;
     }
 
+    /**
+     * @param string $field
+     * @return Query
+     */
     public function group(string $field): self
     {
         $this->group = $field;
         return $this;
     }
 
+    /**
+     * @param string $field
+     * @return Query
+     */
     public function order(string $field): self
     {
         $this->order = $field;
         return $this;
     }
 
+    /**
+     * @param int[] $limit
+     * @return Query
+     */
     public function limit(int ...$limit): self
     {
         $this->limit = $limit;
         return $this;
     }
 
+    /**
+     * Summary of count
+     */
     public function count()
     {
         $this->select("COUNT(id)");
@@ -79,12 +146,32 @@ class Query
             ->fetchColumn();
     }
 
+    /**
+     * Summary of params
+     * @param array $params
+     * @return static
+     */
     public function params(array $params)
     {
         $this->params = $params;
         return $this;
     }
 
+    /**
+     * Summary of into
+     * @param string $entity
+     * @return Query
+     */
+    public function into(string $entity): self
+    {
+        $this->entity = $entity;
+        return $this;
+    }
+
+    /**
+     * Summary of __tostring
+     * @return string
+     */
     public function __tostring()
     {
         $parts = ['SELECT'];
@@ -111,6 +198,10 @@ class Query
         return join(' ', $parts);
     }
 
+    /**
+     * Summary of buildFrom
+     * @return string
+     */
     private function buildFrom()
     {
         $from = [];

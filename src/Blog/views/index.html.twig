@@ -33,10 +33,10 @@
 					<div class="col">
 						<div class="card shadow-sm" style="width: 18rem;">
 							{% if post.category_name %}
-								<div class="card-header text-warning">{{post.category_name}}</div>
+								<div class="card-header text-warning">{{post.categoryName}}</div>
 							{% endif %}
 
-							<img src="https://picsum.photos/seed/{{ post.id }}/300/200" class="{% if post.category_name %} img-fluid {% else %} card-img-top {% endif %}" alt="...">
+							<img src="https://picsum.photos/seed/{{ post.id }}/300/200" class="{% if post.categorNname %} img-fluid {% else %} card-img-top {% endif %}" alt="...">
 							<div class="card-body">
 								<h5 class="card-title">{{post.name}}</h5>
 								<p class="card-text">{{post.content | excerpt | nl2br}}</p>

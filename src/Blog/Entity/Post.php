@@ -2,25 +2,32 @@
 
 namespace App\Blog\Entity;
 
+use AllowDynamicProperties;
 use DateTime;
 
+#[AllowDynamicProperties()]
 class Post
 {
     public $id;
     public $name;
     public $slug;
     public $content;
-    public $created_at;
-    public $updated_at;
-    public $category_id;
-    public $category_name;
-    public function __construct()
+    public $createdAt;
+    public $updatedAt;
+    public $categoryId;
+    public $categoryName;
+
+    public function setCreatedAt(DateTime $datetime)
     {
-        if ($this->created_at) {
-            $this->created_at = new DateTime(datetime: (string) $this->created_at);
+        if (is_string($datetime)) {
+            $this->createdAt = new DateTime(datetime: $datetime);
         }
-        if ($this->updated_at) {
-            $this->updated_at = new DateTime(datetime: (string) $this->updated_at);
+    }
+
+    public function setUpdatedAt(DateTime $datetime)
+    {
+        if (is_string($datetime)) {
+            $this->updatedAt = new DateTime(datetime: $datetime);
         }
     }
 }
