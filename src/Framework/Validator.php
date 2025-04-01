@@ -3,12 +3,19 @@
 namespace Framework;
 
 use DateTime;
-use Framework\Database\Table;
 use Framework\Validator\ValidationError;
+use Psr\Http\Message\UploadedFileInterface;
+
 use PDO;
 
 class Validator
 {
+    private const MIME_TYPES = [
+        'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'pdf' => 'image/pdf'
+    ];
+
     /**
      * @var array
      */
@@ -92,6 +99,12 @@ class Validator
         return $this;
     }
 
+    /**
+     * Vérifie le format de la date
+     * @param string $key
+     * @param string $format
+     * @return Validator
+     */
     public function datetime(string $key, string $format = 'Y-m-d H:i:s'): self
     {
         $value = $this->getValue($key);
@@ -102,6 +115,63 @@ class Validator
         return $this;
     }
 
+
+    /**
+     * Vérifie si le fichier a été uploadé avec succès
+     * @param string $key
+     * @return static
+     */
+    public function uploaded(string $key): self
+    {
+        /**
+         * @var UploadedFileInterface
+         */
+        $file = $this->getValue($key);
+        if ($file === null || $file->getError() !== UPLOAD_ERR_OK) {
+            $this->addError($key, 'uploaded');
+        }
+        return $this;
+    }
+
+    /**
+     * Summary of extension
+     * @param string $key
+     * @param array $extensions
+     * @return Validator
+     */
+    public function extension(string $key, array $extensions): self
+    {
+        /**
+         * @var UploadedFileInterface
+         */
+        $file = $this->getValue($key);
+        if ($file !== null && $file->getError() === UPLOAD_ERR_OK) {
+            $type = $file->getClientMediaType();
+            $extension = mb_strtolower(pathinfo(
+                path: $file->getClientFilename(),
+                flags: PATHINFO_EXTENSION
+            ));
+            $expectedType = self::MIME_TYPES[$extension] ?? null;
+            if (!in_array($extension, $extensions)
+                || $expectedType !== $type
+            ) {
+                $this->addError(
+                    key: $key,
+                    rule: 'filetype',
+                    attributes: [join(', ', $extensions)]
+                );
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Vérifie l'éxistence d'un enregistrement
+     * @param string $key
+     * @param string $table
+     * @param \PDO $pdo
+     * @return Validator
+     */
     public function exists(string $key, string $table, PDO $pdo): self
     {
         $id = $this->getValue($key);

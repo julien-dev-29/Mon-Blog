@@ -9,7 +9,7 @@ use PDO;
 class Query
 {
     /**
-     * @var array 
+     * @var array
      */
     private $select;
 

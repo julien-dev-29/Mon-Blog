@@ -44,7 +44,7 @@ class CrudAction
      * @var string
      */
     protected $routePrefix;
-    
+
     protected $messages = [
         'create' => 'L\'élément a été créé avec succés!',
         'edit' => 'L\'élément a été modifié avec succés!',
@@ -115,16 +115,15 @@ class CrudAction
         $errors = null;
         $item = $this->table->find($request->getAttribute('id'));
         if ($request->getMethod() === 'POST') {
-            $params = $this->getParams($request);
             $validator = $this->getValidator($request);
             if ($validator->isValid()) {
-                $this->table->update($item->id, $params);
+                $this->table->update($item->id, $this->getParams($request, $item));
                 $this->flash->success($this->messages['edit']);
                 return $this->redirect("$this->routePrefix.index");
             }
             $errors = $validator->getErrors();
             $params['id'] = $item->id;
-            $item = $params;
+            $item = $request->getParsedBody();
         }
         return $this->renderer->render(
             view: "$this->viewPath/edit",
@@ -143,15 +142,14 @@ class CrudAction
         $item = $this->getNewEntity();
         $errors = null;
         if ($request->getMethod() === 'POST') {
-            $params = $this->getParams($request);
             $validator = $this->getValidator($request);
             if ($validator->isValid()) {
-                $this->table->insert($params);
+                $this->table->insert($this->getParams($request, $item));
                 $this->flash->success($this->messages['create']);
                 return $this->redirect("$this->routePrefix.index");
             }
             $errors = $validator->getErrors();
-            $item = $params;
+            $item = $request->getParsedBody();
         }
         return $this->renderer->render(
             view: "$this->viewPath/create",
@@ -178,7 +176,7 @@ class CrudAction
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return array|object|null
      */
-    protected function getParams(Request $request)
+    protected function getParams(Request $request, $item)
     {
         return array_filter(
             array: $request->getParsedBody(),
@@ -194,7 +192,10 @@ class CrudAction
      */
     protected function getValidator(Request $request): Validator
     {
-        return new Validator($request->getParsedBody());
+        return new Validator(array_merge(
+            $request->getParsedBody(),
+            $request->getUploadedFiles()
+        ));
     }
 
     /**

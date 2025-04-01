@@ -7,6 +7,17 @@
     <div class="mb-3 col-md-4">
 	    {{ field('category_id', item.category_id ?? "", 'Catégorie de l\'article', {options: categories}) }}
 	</div>
+</div>
+<div class="row">
+	<div class="mb-3 col-md-4">
+		{% if item.image %}
+			<img src="{{item.thumb}}" alt="image de l'article" style="width:100%">
+		{% endif %}
+	</div>
+
+	<div class="mb-3 col-md-4">
+		{{field('image', item.slug, 'Image', {type: 'file'})}}
+	</div>
 	<div class="mb-3 col-md-4">
 		{{ field('slug', item.slug, 'Slug de l\'article') }}
     </div>

@@ -32,8 +32,13 @@ class FormExtension extends AbstractExtension
      * @param array $options
      * @return string
      */
-    public function field(array $context, string $key, $value, ?string $label = null, array $options = []): string
-    {
+    public function field(
+        array $context,
+        string $key,
+        $value,
+        ?string $label = null,
+        array $options = []
+    ): string {
         $error = $this->getErrors(context: $context, key: $key);
         $error ? $feedback = 'is-invalid' : $feedback = '';
         $attributes = [
@@ -44,11 +49,25 @@ class FormExtension extends AbstractExtension
         $value = $this->convertValue($value);
         $type = $options['type'] ?? 'text';
         if ($type === 'textarea') {
-            $html = $this->textarea($key, $value, $feedback);
+            $html = $this->textarea(
+                key: $key,
+                value: $value,
+                feedback: $feedback
+            );
+        } elseif ($type === 'file') {
+            $html = $this->file($attributes, $feedback);
         } elseif (array_key_exists('options', $options)) {
-            $html = $this->select($value, $options['options'], $attributes);
+            $html = $this->select(
+                value: $value,
+                options: $options['options'],
+                attributes: $attributes
+            );
         } else {
-            $html = $this->input($attributes, $value, $feedback);
+            $html = $this->input(
+                attributes: $attributes,
+                value: $value,
+                feedback: $feedback
+            );
         }
         $html .= $this->getErrorHTMLElement($key, $error);
         return "<label for=\"$key\" class=\"form-label\">$label</label>$html";
@@ -109,6 +128,16 @@ class FormExtension extends AbstractExtension
         return "<select class=\"form-control\" id=\"$id\" name=\"$name\">
         $htmlOptions
         </select>";
+    }
+
+    public function file(array $attributes, ?string $feedback)
+    {
+        $id = $attributes['id'];
+        $name = $attributes['name'];
+        return "<input type=\"file\" 
+        class=\"form-control $feedback\" 
+        id=\"$id\" name=\"$name\"\" 
+        aria-describedby=\"titreHelp\">";
     }
 
     /**

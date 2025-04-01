@@ -96,7 +96,6 @@ class QueryResult implements ArrayAccess, Iterator
     public function offsetUnset(mixed $offset): void
     {
         throw new Exception("Can't alter records !");
-
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Blog\Actions;
 
 use App\Blog\Entity\Post;
+use App\Blog\PostUpload;
 use App\Blog\Table\CategoryTable;
 use App\Blog\Table\PostTable;
 use DateTime;
@@ -16,6 +17,7 @@ class PostCrudAction extends CrudAction
 {
     protected $viewPath = '@blog/admin/posts';
     protected $routePrefix = 'blog.admin';
+    private $postUpload;
 
     /**
      * @var CategoryTable
@@ -27,17 +29,38 @@ class PostCrudAction extends CrudAction
         Router $router,
         PostTable $table,
         FlashService $flash,
-        CategoryTable $categoryTable
+        CategoryTable $categoryTable,
+        PostUpload $postUpload
     ) {
         parent::__construct($renderer, $router, $table, $flash);
         $this->categoryTable = $categoryTable;
+        $this->postUpload = $postUpload;
     }
-    protected function getParams(Request $request)
+
+    public function delete(Request $request)
     {
+        $post = $this->table->find($request->getAttribute('id'));
+        $this->postUpload->delete($post->image);
+        return parent::delete($request);
+    }
+
+    /**
+     * Summary of getParams
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param mixed $post
+     * @return array|object|null
+     */
+    protected function getParams(Request $request, $post)
+    {
+        $params = array_merge(
+            $request->getParsedBody(),
+            $request->getUploadedFiles()
+        );
+        $params['image'] = $this->postUpload->upload($params['image'], $post->image);
         $params = array_filter(
-            array: $request->getParsedBody(),
+            array: $params,
             callback: fn($key) =>
-            in_array($key, ['name', 'slug', 'content', 'created_at', 'category_id']),
+            in_array($key, ['name', 'slug', 'content', 'created_at', 'category_id', 'image']),
             mode: ARRAY_FILTER_USE_KEY
         );
         return $params = array_merge($params, [
@@ -52,7 +75,10 @@ class PostCrudAction extends CrudAction
      */
     protected function getValidator(Request $request): Validator
     {
-        return parent::getValidator($request)
+        /**
+         * @var Validator
+         */
+        $validator = parent::getValidator($request)
             ->required('name', 'slug', 'content', 'created_at', 'category_id')
             ->length('content', 10)
             ->length('name', 2, 250)
@@ -63,7 +89,12 @@ class PostCrudAction extends CrudAction
                 pdo: $this->categoryTable->getPDO()
             )
             ->datetime('created_at')
+            ->extension('image', ['jpg', 'png'])
             ->slug('slug');
+        if ($request->getAttribute('id') === null) {
+            $validator->uploaded('image');
+        }
+        return $validator;
     }
 
     /**

@@ -12,7 +12,7 @@
 
 	<h1>Publier un article</h1>
 
-	<form action="{{path(routePrefix ~ '.create')}}" method="post">
+	<form action="{{path(routePrefix ~ '.create')}}" method="post" enctype="multipart/form-data">
 		{% include viewPath ~ '/form.html.twig' %}
 		<button type="submit" class="btn btn-primary">Publier</button>
 	</form>

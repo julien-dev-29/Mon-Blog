@@ -12,7 +12,7 @@
 
 	<h1>Editer la catégorie {{item.name}}</h1>
 
-	<form action="{{path(routePrefix ~ '.edit', {id: item.id})}}" method="post">
+	<form action="{{path(routePrefix ~ '.edit', {id: item.id})}}" method="post" enctype="multipart/form-data">
 		{% include viewPath ~ '/form.html.twig' %}
 		<button type="submit" class="btn btn-primary">Editer</button>
 	</form>

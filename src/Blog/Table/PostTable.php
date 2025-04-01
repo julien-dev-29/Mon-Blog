@@ -41,6 +41,13 @@ class PostTable extends Table
             ->setCurrentPage($currentPage);
     }
 
+    /**
+     * Summary of findPaginatedPublicByCategory
+     * @param int $perPage
+     * @param int $currentPage
+     * @param int $categoryID
+     * @return Pagerfanta
+     */
     public function findPaginatedPublicByCategory(int $perPage, int $currentPage, int $categoryID): Pagerfanta
     {
         $query = new PaginatedQuery(
@@ -59,6 +66,10 @@ class PostTable extends Table
             ->setCurrentPage($currentPage);
     }
 
+    /**
+     * Summary of findWithCategory
+     * @param int $id
+     */
     public function findWithCategory(int $id)
     {
         return $this->fetchOrFail(

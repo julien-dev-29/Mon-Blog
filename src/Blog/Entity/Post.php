@@ -14,8 +14,7 @@ class Post
     public $content;
     public $createdAt;
     public $updatedAt;
-    public $categoryId;
-    public $categoryName;
+    public $image;
 
     public function setCreatedAt(DateTime $datetime)
     {
@@ -29,5 +28,14 @@ class Post
         if (is_string($datetime)) {
             $this->updatedAt = new DateTime(datetime: $datetime);
         }
+    }
+
+    public function getThumb()
+    {
+        $filename = pathinfo($this->image, PATHINFO_FILENAME);
+        $extension = pathinfo($this->image, PATHINFO_EXTENSION);
+        return DIRECTORY_SEPARATOR . 'uploads' .
+            DIRECTORY_SEPARATOR . 'posts' .
+            DIRECTORY_SEPARATOR . $filename . '_thumb.' . $extension;
     }
 }
