@@ -62,6 +62,12 @@ class FormExtension extends AbstractExtension
                 options: $options['options'],
                 attributes: $attributes
             );
+        } elseif ($type === 'checkbox') {
+            $html = $this->checkbox(
+                value: $value,
+                attributes: $attributes,
+                feedback: $feedback
+            );
         } else {
             $html = $this->input(
                 attributes: $attributes,
@@ -137,6 +143,18 @@ class FormExtension extends AbstractExtension
         return "<input type=\"file\" 
         class=\"form-control $feedback\" 
         id=\"$id\" name=\"$name\"\" 
+        aria-describedby=\"titreHelp\">";
+    }
+
+    public function checkbox(string $value, array $attributes, $feedback)
+    {
+        $name = $attributes['name'];
+        $class = $attributes['class'];
+        $checked = $value ? 'checked' : '';
+        $html = "<input type=\"hidden\" name=\"$name\" value=\"0\" />";
+        return "$html<input type=\"checkbox\" 
+        class=\"form-check-input ms-3\" 
+        name=\"$name\" value=\"1\" $checked
         aria-describedby=\"titreHelp\">";
     }
 

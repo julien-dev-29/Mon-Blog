@@ -19,7 +19,7 @@
 			{% for item in items %}
 				<tr>
 					<td>{{ item.name }}</td>
-					<td>{{ item.category_name }}</td>
+					<td>{{ item.categoryName }}</td>
 					<td class="d-flex justify-content-end">
 						<a href="{{path(routePrefix ~ '.edit', {id: item.id})}}" class="btn btn-primary me-2">Editer</a>
 						<form action="{{path(routePrefix ~ '.delete', {id: item.id})}}" class="d-inline" method="post" onsubmit="return confirm('Etes vous sûr?')">

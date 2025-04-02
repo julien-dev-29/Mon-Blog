@@ -26,11 +26,11 @@ class QueryTest extends DatabaseTestCase
             ->where('a = :a OR b = :b')
             ->where('c = :c');
         $this->assertEquals(
-            expected: 'SELECT * FROM posts as p WHERE (a = :a OR b = :b) AND (c = :c)',
+            expected: 'SELECT * FROM posts p WHERE (a = :a OR b = :b) AND (c = :c)',
             actual: (string) $query
         );
         $this->assertEquals(
-            expected: 'SELECT * FROM posts as p WHERE (a = :a OR b = :b) AND (c = :c)',
+            expected: 'SELECT * FROM posts p WHERE (a = :a OR b = :b) AND (c = :c)',
             actual: (string) $query2
         );
     }
@@ -67,7 +67,7 @@ class QueryTest extends DatabaseTestCase
         $posts = new Query($pdo)
             ->from('posts', 'p')
             ->into(Demo::class)
-            ->all();
+            ->fetchAll();
         $this->assertEquals(
             expected: 'demo',
             actual: substr($posts[0]->getSlug(), -4)
@@ -82,7 +82,7 @@ class QueryTest extends DatabaseTestCase
         $posts = new Query($pdo)
             ->from('posts', 'p')
             ->into(Demo::class)
-            ->all();
+            ->fetchAll();
         $post = $posts[0];
         $post2 = $posts[0];
         $this->assertSame($post, $post2);
@@ -107,10 +107,11 @@ class QueryTest extends DatabaseTestCase
             ->select('name', 'category_id')
             ->from('posts')
             ->group('name')
-            ->order('name')
+            ->order('id ASC')
+            ->order('name DESC')
         ;
         $this->assertEquals(
-            expected: 'SELECT name, category_id FROM posts GROUP BY name ORDER BY name',
+            expected: 'SELECT name, category_id FROM posts GROUP BY name ORDER BY id ASC, name DESC',
             actual: $query->__tostring()
         );
     }
@@ -121,12 +122,25 @@ class QueryTest extends DatabaseTestCase
             ->select('name', 'category_id')
             ->from('posts')
             ->group('name')
-            ->order('name')
-            ->limit(5, 15)
+            ->limit(10, 5)
         ;
         $this->assertEquals(
-            expected: 'SELECT name, category_id FROM posts GROUP BY name ORDER BY name LIMIT 5, 15',
+            expected: 'SELECT name, category_id FROM posts GROUP BY name LIMIT 5, 10',
             actual: $query->__tostring()
         );
+    }
+
+
+    public function testJoinQuery()
+    {
+        $query = new Query()
+            ->from('posts', 'p')
+            ->select('name')
+            ->join('categories c', 'c.id = p.category_id')
+            ->join('categories c2', 'c2.id = p.category_id', 'inner');
+        $this->assertEquals("SELECT name FROM posts p " .
+            "LEFT JOIN categories c ON c.id = p.category_id " .
+            "INNER JOIN categories c2 " .
+            "ON c2.id = p.category_id", $query->__tostring());
     }
 }

@@ -3,9 +3,9 @@
 namespace Framework\Database;
 
 use Framework\Database\Exception\RecordNotFoundException;
-use Framework\Database\PaginatedQuery;
-use Pagerfanta\Pagerfanta;
 use PDO;
+use stdClass;
+use Traversable;
 
 class Table
 {
@@ -17,7 +17,7 @@ class Table
     /**
      * @var string|null Nom de la table en BDD
      */
-    protected $entity;
+    protected $entity = stdClass::class;
 
     /**
      * @var PDO
@@ -26,55 +26,6 @@ class Table
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-    }
-
-    /**
-     * Execute une requète et récupère le premier résultat
-     *
-     * @param string $query
-     * @param array $params
-     * @throws \Framework\Database\Exception\RecordNotFoundException
-     */
-    protected function fetchOrFail(string $query, array $params = [])
-    {
-        $query = $this->pdo->prepare(query: $query);
-        $query->execute(params: $params);
-        if ($this->entity) {
-            $query->setFetchMode(PDO::FETCH_CLASS, $this->entity);
-        }
-        $record = $query->fetch();
-        if ($record === false) {
-            throw new RecordNotFoundException();
-        }
-        return $record;
-    }
-
-    /**
-     * Summary of findPaginated
-     * @param int $perPage
-     * @return Pagerfanta
-     */
-    public function findPaginated(int $perPage, int $currentPage): Pagerfanta
-    {
-        $query = new PaginatedQuery(
-            pdo: $this->pdo,
-            query: $this->paginationQuery(),
-            countQuery: "SELECT COUNT(id) FROM $this->table",
-            entity: $this->entity
-        );
-        return new Pagerfanta($query)
-            ->setMaxPerPage($perPage)
-            ->setCurrentPage($currentPage);
-    }
-
-    /**
-     * Retourne la requête pour la pagination
-     *
-     * @return string
-     */
-    protected function paginationQuery(): string
-    {
-        return "SELECT * FROM  $this->table";
     }
 
     /**
@@ -95,6 +46,18 @@ class Table
     }
 
     /**
+     * Retourne une requête
+     * @return Query
+     */
+    protected function createQuery()
+    {
+        return new Query($this->pdo)
+        ->from($this->table, $this->table[0])
+        ->into($this->entity)
+        ;
+    }
+
+    /**
      * Retourne un élément par son id
      *
      * @param integer $id
@@ -103,34 +66,19 @@ class Table
      */
     public function find(int $id): mixed
     {
-        $query = $this->pdo->prepare(query: "SELECT * FROM $this->table  WHERE id = ?;");
-        $query->execute(params: [$id]);
-        if ($this->entity) {
-            $query->setFetchMode(PDO::FETCH_CLASS, $this->entity);
-        }
-        $record = $query->fetch();
-        if ($record === false) {
-            throw new RecordNotFoundException();
-        }
-        return $record;
+        return $this->createQuery()
+            ->where("id = :id")
+            ->params(["id" => $id])
+            ->fetchOrFail();
     }
 
     /**
-     * Retourne tous les enregistrements d'une table
-     *
-     * @return array
-     * @throws RecordNotFoundException
+     * Retourne tout les enregistrement
+     * @return Query
      */
-    public function findAll(): array
+    public function findAll(): Query
     {
-        $query = $this->pdo
-            ->query("SELECT * FROM $this->table");
-        if ($this->entity) {
-            $query->setFetchMode(PDO::FETCH_CLASS, $this->entity);
-        } else {
-            $query->setFetchMode(PDO::FETCH_OBJ);
-        }
-        return $query->fetchAll();
+        return $this->createQuery();
     }
 
     /**
@@ -143,10 +91,10 @@ class Table
      */
     public function findBy(string $field, string $value)
     {
-        return $this->fetchOrFail(
-            query: "SELECT * FROM $this->table WHERE $field = ?",
-            params: [$value]
-        );
+        return $this->createQuery()
+            ->where("$field = :field")
+            ->params(["field" => $value])
+            ->fetchOrFail();
     }
 
     /**
@@ -202,7 +150,7 @@ class Table
      */
     public function count(): int
     {
-        return $this->fetchColumn("SELECT COUNT(id) FROM $this->table");
+        return $this->createQuery()->count();
     }
 
     /**
@@ -251,21 +199,5 @@ class Table
             callback: fn($field): string => "$field = :$field",
             array: array_keys($params)
         ));
-    }
-
-    /**
-     * Retourne la première colonne
-     *
-     * @param mixed $query
-     * @param mixed $params
-     */
-    private function fetchColumn($query, $params = [])
-    {
-        $query = $this->pdo->prepare($query);
-        $query->execute($params);
-        if ($this->entity) {
-            $query->setFetchMode(PDO::FETCH_CLASS, $this->entity);
-        }
-        return $query->fetchColumn();
     }
 }

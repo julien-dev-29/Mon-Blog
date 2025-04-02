@@ -1,10 +1,12 @@
 <?php
-
 namespace Framework\Database;
 
 use Pagerfanta\Adapter\AdapterInterface;
 use PDO;
 
+/**
+ * Traite la pagination
+ */
 class PaginatedQuery implements AdapterInterface
 {
     /**
@@ -13,24 +15,9 @@ class PaginatedQuery implements AdapterInterface
     private $pdo;
 
     /**
-     * @var string
+     * @var Query
      */
     private $query;
-
-    /**
-     * @var string
-     */
-    private $countQuery;
-
-    /**
-     * @var string|null
-     */
-    private $entity;
-
-    /**
-     * @var array
-     */
-    private $params;
 
     /**
      * Summary of __construct
@@ -39,50 +26,28 @@ class PaginatedQuery implements AdapterInterface
      * @param string $countQuery
      * @param string|null $entity
      */
-    public function __construct(
-        PDO $pdo,
-        string $query,
-        string $countQuery,
-        ?string $entity,
-        array $params = []
-    ) {
-        $this->pdo = $pdo;
+    public function __construct(Query $query)
+    {
         $this->query = $query;
-        $this->countQuery = $countQuery;
-        $this->entity = $entity;
-        $this->params = $params;
     }
 
     /**
+     * Retourne le nombre de résultat
      * @return int
      */
     public function getNbResults(): int
     {
-        if (!empty($this->params)) {
-            $query = $this->pdo->prepare($this->countQuery);
-            $query->execute($this->params);
-            return $query->fetchColumn();
-        }
-        return $this->pdo->query($this->countQuery)->fetchColumn();
+        return $this->query->count();
     }
 
     /**
      * @param int $offset
      * @param int $length
-     * @return array
+     * @return \Traversable
      */
-    public function getSlice(int $offset, int $length): array|\Traversable
+    public function getSlice(int $offset, int $length): QueryResult
     {
-        $query = $this->pdo->prepare(query: "$this->query LIMIT :offset, :length;");
-        foreach ($this->params as $key => $param) {
-            $query->bindParam($key, $param);
-        }
-        $query->bindParam('offset', $offset, PDO::PARAM_INT);
-        $query->bindParam('length', $length, PDO::PARAM_INT);
-        if ($this->entity) {
-            $query->setFetchMode(PDO::FETCH_CLASS, $this->entity);
-        }
-        $query->execute();
-        return $query->fetchAll();
+        $query = clone $this->query;
+        return $query->limit($length, $offset)->fetchAll();
     }
 }

@@ -32,18 +32,19 @@
 				{% for post in posts %}
 					<div class="col">
 						<div class="card shadow-sm" style="width: 18rem;">
-							{% if post.category_name %}
+							{% if post.categoryName %}
 								<div class="card-header text-warning">{{post.categoryName}}</div>
 							{% endif %}
-
-							<img src="https://picsum.photos/seed/{{ post.id }}/300/200" class="{% if post.categorNname %} img-fluid {% else %} card-img-top {% endif %}" alt="...">
+							{% if post.thumb %}
+								<img src="{{ post.thumb }}" class="{% if post.categoryName %} img-fluid {% else %} card-img-top {% endif %}" alt="{{post.name}}">
+							{% endif %}
 							<div class="card-body">
 								<h5 class="card-title">{{post.name}}</h5>
 								<p class="card-text">{{post.content | excerpt | nl2br}}</p>
 								<a href="{{path('blog.show', {slug: post.slug, id: post.id}) }}" class="btn btn-primary">Voir l'article</a>
 							</div>
 							<div class="card-footer">
-								<small class="text-body-secondary">{{post.created_at | ago}}</small>
+								<small class="text-body-secondary">{{post.createdAt | ago}}</small>
 							</div>
 						</div>
 					</div>
@@ -53,7 +54,7 @@
 		<div class="col-md-3">
 			<div class="list-group shadow-sm">
 				{% for c in categories %}
-				
+
 					<a href="{{path('blog.category', {slug: c.slug})}}" class="list-group-item list-group-item-action list-group-item-info {% if c.id == category.id %}active{% endif %}">{{c.name}}</a>
 				{% endfor %}
 			</div>

@@ -3,6 +3,7 @@
 namespace App\Blog\Actions;
 
 use Framework\Actions\RouterAction;
+use Framework\Database\Hydrator;
 use Framework\Database\Table;
 use Framework\Renderer\RendererInterface;
 use Framework\Router;
@@ -97,7 +98,9 @@ class CrudAction
     public function index(Request $request): string
     {
         $params = $request->getQueryParams();
-        $items = $this->table->findPaginated(perPage: 12, currentPage: $params['p'] ?? 1);
+        $items = $this->table
+            ->findAll()
+            ->paginate(12, $params['p'] ?? 1);
         return $this->renderer->render(
             view: "$this->viewPath/index",
             params: compact('items')
@@ -117,13 +120,16 @@ class CrudAction
         if ($request->getMethod() === 'POST') {
             $validator = $this->getValidator($request);
             if ($validator->isValid()) {
-                $this->table->update($item->id, $this->getParams($request, $item));
+                $this->table->update(
+                    id: $item->id,
+                    params:
+                    $this->getParams($request, $item)
+                );
                 $this->flash->success($this->messages['edit']);
                 return $this->redirect("$this->routePrefix.index");
             }
             $errors = $validator->getErrors();
-            $params['id'] = $item->id;
-            $item = $request->getParsedBody();
+            Hydrator::hydrate($request->getParsedBody(), $item);
         }
         return $this->renderer->render(
             view: "$this->viewPath/edit",
@@ -149,7 +155,7 @@ class CrudAction
                 return $this->redirect("$this->routePrefix.index");
             }
             $errors = $validator->getErrors();
-            $item = $request->getParsedBody();
+            Hydrator::hydrate($request->getParsedBody(), $item);
         }
         return $this->renderer->render(
             view: "$this->viewPath/create",

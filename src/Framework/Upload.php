@@ -18,19 +18,28 @@ class Upload
         $this->path = $path;
     }
 
+
+    /**
+     * @param \Psr\Http\Message\UploadedFileInterface $file
+     * @param mixed $oldFile
+     * @return mixed|string|null
+     */
     public function upload(UploadedFileInterface $file, ?string $oldFile = null)
     {
-        $this->delete($oldFile);
-        $targetPath = $this->addCopySuffix(
-            $this->path . DIRECTORY_SEPARATOR . $file->getClientFilename()
-        );
-        $dirname = pathinfo($targetPath, PATHINFO_DIRNAME);
-        if (!file_exists($dirname)) {
-            mkdir($dirname, 777, true);
+        if ($file->getError() === UPLOAD_ERR_OK) {
+            $this->delete($oldFile);
+            $targetPath = $this->addCopySuffix(
+                $this->path . DIRECTORY_SEPARATOR . $file->getClientFilename()
+            );
+            $dirname = pathinfo($targetPath, PATHINFO_DIRNAME);
+            if (!file_exists($dirname)) {
+                mkdir($dirname, 777, true);
+            }
+            $file->moveTo($targetPath);
+            $this->generateFormats($targetPath);
+            return pathinfo($targetPath)['basename'];
         }
-        $file->moveTo($targetPath);
-        $this->generateFormats($targetPath);
-        return pathinfo($targetPath)['basename'];
+        return null;
     }
 
     /**

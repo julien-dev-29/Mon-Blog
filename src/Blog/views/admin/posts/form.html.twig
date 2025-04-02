@@ -5,7 +5,10 @@
 		{{ field('name', item.name, 'Titre de l\'article') }}
     </div>
     <div class="mb-3 col-md-4">
-	    {{ field('category_id', item.category_id ?? "", 'Catégorie de l\'article', {options: categories}) }}
+	    {{ field('category_id', item.categoryId ?? "", 'Catégorie de l\'article', {options: categories}) }}
+	</div>
+	<div class="mb-3 col-md-4">
+	    {{ field('published', item.published ?? "", 'Mettre en ligne ?', {type: 'checkbox'}) }}
 	</div>
 </div>
 <div class="row">
@@ -27,5 +30,5 @@
 	{{ field('content', item.content, 'Contenu de l\'article', {'type':'textarea'}) }}
 	</div>
 	<div class="mb-3">
-		{{ field('created_at', item.created_at, 'Date de création', {'class': 'datepicker'}) }}
+		{{ field('created_at', item.createdAt, 'Date de création', {'class': 'datepicker'}) }}
 	</div>

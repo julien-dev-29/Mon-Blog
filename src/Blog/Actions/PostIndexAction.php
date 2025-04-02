@@ -62,8 +62,11 @@ class PostIndexAction
      */
     public function __invoke(Request $request): MessageInterface|string
     {
+        var_dump("yolo");
         $params = $request->getQueryParams();
-        $posts = $this->postTable->findPaginatedPublic(perPage: 12, currentPage: $params['p'] ?? 1);
+        $posts = $this->postTable
+            ->findPublic()
+            ->paginate(12, $params['p'] ?? 1);
         $categories = $this->categoryTable->findAll();
         $page = $params['p'] ?? 1;
         return $this->renderer->render(

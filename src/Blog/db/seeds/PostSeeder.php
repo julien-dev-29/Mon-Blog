@@ -22,7 +22,6 @@ class PostSeeder extends AbstractSeed
         $this->table('categories')
             ->insert($data)
             ->save();
-
         // Posts
         $data = [];
         for ($i = 0; $i < 100; $i++) {
@@ -33,7 +32,8 @@ class PostSeeder extends AbstractSeed
                 'content' => $faker->text(3000),
                 'created_at' => $faker->date('Y-m-d H:i:s', $date),
                 'updated_at' => $faker->date('Y-m-d H:i:s', $date),
-                'category_id' => rand(1, 5)
+                'category_id' => rand(1, 5),
+                'published' => 1
             ];
         }
         $this->table('posts')

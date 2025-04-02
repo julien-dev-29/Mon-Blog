@@ -56,11 +56,16 @@ class PostCrudAction extends CrudAction
             $request->getParsedBody(),
             $request->getUploadedFiles()
         );
-        $params['image'] = $this->postUpload->upload($params['image'], $post->image);
+        $image = $this->postUpload->upload($params['image'], $post->image);
+        if ($image) {
+            $params['image'] = $image;
+        } else {
+            unset($params['image']);
+        }
         $params = array_filter(
             array: $params,
             callback: fn($key) =>
-            in_array($key, ['name', 'slug', 'content', 'created_at', 'category_id', 'image']),
+            in_array($key, ['name', 'slug', 'content', 'created_at', 'category_id', 'image', 'published']),
             mode: ARRAY_FILTER_USE_KEY
         );
         return $params = array_merge($params, [

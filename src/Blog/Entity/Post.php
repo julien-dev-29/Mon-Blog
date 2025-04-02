@@ -16,14 +16,14 @@ class Post
     public $updatedAt;
     public $image;
 
-    public function setCreatedAt(DateTime $datetime)
+    public function setCreatedAt($datetime)
     {
         if (is_string($datetime)) {
             $this->createdAt = new DateTime(datetime: $datetime);
         }
     }
 
-    public function setUpdatedAt(DateTime $datetime)
+    public function setUpdatedAt($datetime)
     {
         if (is_string($datetime)) {
             $this->updatedAt = new DateTime(datetime: $datetime);
@@ -37,5 +37,10 @@ class Post
         return DIRECTORY_SEPARATOR . 'uploads' .
             DIRECTORY_SEPARATOR . 'posts' .
             DIRECTORY_SEPARATOR . $filename . '_thumb.' . $extension;
+    }
+
+    public function getImageUrl()
+    {
+        return '/uploads/posts/' . $this->image;
     }
 }
